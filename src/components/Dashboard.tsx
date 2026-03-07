@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { PlayCircle, Trophy, Target, BookOpen, Clock, Lock, CheckCircle2 } from 'lucide-react';
 
@@ -170,23 +171,28 @@ export default function Dashboard() {
                                         </div>
                                     </div>
 
-                                    <button
-                                        disabled={lesson.status === 'locked'}
-                                        className={`px-6 py-3 shrink-0 rounded-xl font-bold flex items-center gap-2 transition-all ${lesson.status === 'locked'
-                                            ? 'bg-gray-800 text-gray-500 cursor-not-allowed border border-gray-700'
-                                            : lesson.status === 'completed'
+                                    {lesson.status === 'locked' ? (
+                                        <button
+                                            disabled
+                                            className="px-6 py-3 shrink-0 rounded-xl font-bold flex items-center gap-2 transition-all bg-gray-800 text-gray-500 cursor-not-allowed border border-gray-700"
+                                        >
+                                            <Lock className="w-5 h-5" /> Locked
+                                        </button>
+                                    ) : (
+                                        <Link
+                                            href={`/lesson/${lesson.id}`}
+                                            className={`px-6 py-3 shrink-0 rounded-xl font-bold flex items-center gap-2 transition-all ${lesson.status === 'completed'
                                                 ? 'bg-brand-charcoal-light hover:bg-gray-700 text-brand-gold border border-gray-700 hover:border-brand-gold/50 shadow-md'
                                                 : 'bg-brand-coral hover:bg-[#ff6b3d] text-white shadow-md shadow-brand-coral/20'
-                                            }`}
-                                    >
-                                        {lesson.status === 'locked' ? (
-                                            <><Lock className="w-5 h-5" /> Locked</>
-                                        ) : lesson.status === 'completed' ? (
-                                            <><Clock className="w-5 h-5" /> Review</>
-                                        ) : (
-                                            <><PlayCircle className="w-5 h-5" /> Start Lesson</>
-                                        )}
-                                    </button>
+                                                }`}
+                                        >
+                                            {lesson.status === 'completed' ? (
+                                                <><Clock className="w-5 h-5" /> Review</>
+                                            ) : (
+                                                <><PlayCircle className="w-5 h-5" /> Start Lesson</>
+                                            )}
+                                        </Link>
+                                    )}
                                 </div>
                             ))
                         ) : (

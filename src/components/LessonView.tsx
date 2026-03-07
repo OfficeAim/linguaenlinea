@@ -5,12 +5,39 @@ import { supabase } from '@/lib/supabase';
 import { PlayCircle, ArrowLeft, Target, BookOpen, MessageCircle, PenTool, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 
+interface VocabularyItem {
+    es: string;
+    nl: string;
+    ex: string;
+}
+
+interface DialogueLine {
+    speaker: string;
+    text: string;
+}
+
+interface LessonContent {
+    unit: number;
+    lesson_number: number;
+    audio_file?: string;
+    vocabulary_theme?: string;
+    objectives?: string;
+    grammar_focus?: string;
+    can_do?: string;
+    vocabulary_list?: VocabularyItem[];
+    grammar_explanation?: string;
+    dialogue?: DialogueLine[];
+    practice?: string;
+}
+
 interface Lesson {
     id: string;
     title: string;
     description?: string;
     order_index: number;
     slo_alignment: string[];
+    video_url?: string;
+    content_json?: LessonContent;
 }
 
 export default function LessonView({ id }: { id: string }) {
@@ -27,7 +54,7 @@ export default function LessonView({ id }: { id: string }) {
                 .single();
 
             if (!error && data) {
-                setLesson(data);
+                setLesson(data as Lesson);
             }
             setLoading(false);
         };
@@ -59,8 +86,10 @@ export default function LessonView({ id }: { id: string }) {
         { id: 'communicate', label: 'Communicate', icon: <MessageCircle className="w-4 h-4" /> }
     ] as const;
 
+    const content = lesson.content_json;
+
     return (
-        <div className="min-h-screen bg-brand-charcoal text-gray-200 font-sans p-4 md:p-8 lg:max-w-6xl lg:mx-auto">
+        <div className="min-h-screen bg-brand-charcoal text-gray-200 font-sans p-4 md:p-8 lg:max-w-6xl lg:mx-auto pb-32">
             {/* Navigation Header */}
             <header className="flex items-center justify-between mb-8">
                 <Link href="/" className="flex items-center text-gray-400 hover:text-white transition-colors">
@@ -80,16 +109,26 @@ export default function LessonView({ id }: { id: string }) {
             <div className="mb-8">
                 <div className="text-brand-coral font-bold tracking-widest text-sm mb-2 uppercase">Lesson {lesson.order_index}</div>
                 <h1 className="text-3xl md:text-5xl font-bold text-white mb-4">{lesson.title}</h1>
+                {content?.can_do && (
+                    <div className="bg-brand-charcoal-light p-4 rounded-xl border border-gray-800 mb-4 shadow-sm">
+                        <strong className="text-brand-gold">Can-do Statement:</strong>
+                        <p className="text-gray-300 mt-1">{content.can_do}</p>
+                    </div>
+                )}
             </div>
 
-            {/* Main Video Placeholder */}
-            <div className="w-full aspect-video bg-black rounded-3xl border border-gray-800 shadow-2xl overflow-hidden relative mb-12 group flex items-center justify-center">
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
-                <PlayCircle className="w-20 h-20 text-white/50 group-hover:text-brand-coral transition-colors z-10 cursor-pointer drop-shadow-lg" />
-                <div className="absolute bottom-6 left-6 z-10">
-                    <h3 className="text-xl font-bold">Interactive Video Lesson</h3>
-                    <p className="text-gray-400">00:00 / 08:45</p>
-                </div>
+            {/* Main Video */}
+            <div className="w-full aspect-video bg-black rounded-3xl border border-gray-800 shadow-2xl overflow-hidden relative mb-12 flex items-center justify-center">
+                {lesson.video_url ? (
+                    <video src={lesson.video_url} controls className="w-full h-full object-cover">
+                        Your browser does not support the video tag.
+                    </video>
+                ) : (
+                    <div className="flex flex-col items-center justify-center opacity-50">
+                        <PlayCircle className="w-20 h-20 text-brand-coral mb-4" />
+                        <p>Video processing...</p>
+                    </div>
+                )}
             </div>
 
             {/* Pedagogical Tabs */}
@@ -100,8 +139,8 @@ export default function LessonView({ id }: { id: string }) {
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
                             className={`flex-1 min-w-[120px] flex items-center justify-center gap-2 py-4 px-4 font-bold transition-colors ${activeTab === tab.id
-                                    ? 'bg-brand-charcoal text-brand-coral border-b-2 border-brand-coral'
-                                    : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800/50'
+                                ? 'bg-brand-charcoal text-brand-coral border-b-2 border-brand-coral'
+                                : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800/50'
                                 }`}
                         >
                             {tab.icon}
@@ -112,48 +151,71 @@ export default function LessonView({ id }: { id: string }) {
 
                 <div className="p-8 min-h-[300px]">
                     {activeTab === 'understand' && (
-                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        <div className="animate-in fade-in duration-500">
                             <h2 className="text-2xl font-bold text-white mb-4">Understand the Context</h2>
-                            <p className="text-gray-400 leading-relaxed max-w-3xl">
-                                Watch the video above to immerse yourself in the authentic context of Latin America.
-                                Pay close attention to how native speakers express themselves in real-life situations.
-                                Read the key vocabulary and grammar structures below before diving deeper.
-                            </p>
-                            {/* Placeholder for content */}
+
                             <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="p-4 rounded-xl border border-gray-800 bg-brand-charcoal">
-                                    <h4 className="font-bold text-brand-gold mb-2">Key Vocabulary</h4>
-                                    <ul className="space-y-2 text-gray-400">
-                                        <li>• La familia (The family)</li>
-                                        <li>• El hermano / La hermana (Brother / Sister)</li>
-                                    </ul>
+                                    <h4 className="font-bold text-brand-gold mb-4 mt-2">Key Vocabulary</h4>
+                                    {content?.vocabulary_list && content.vocabulary_list.length > 0 ? (
+                                        <ul className="space-y-3">
+                                            {content.vocabulary_list.map((v, i) => (
+                                                <li key={i} className="text-sm">
+                                                    <span className="text-white font-medium">{v.es}</span> <span className="text-gray-500">—</span> <span className="text-gray-400">{v.nl}</span>
+                                                    <p className="text-gray-600 italic mt-1">{v.ex}</p>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    ) : (
+                                        <p className="text-gray-500 italic">Vocabulary coming soon...</p>
+                                    )}
                                 </div>
                                 <div className="p-4 rounded-xl border border-gray-800 bg-brand-charcoal">
                                     <h4 className="font-bold text-brand-coral mb-2">Grammar Focus</h4>
-                                    <ul className="space-y-2 text-gray-400">
-                                        <li>• Ser vs. Estar context</li>
-                                        <li>• Possessive adjectives</li>
-                                    </ul>
+                                    {content?.grammar_explanation ? (
+                                        <div className="text-gray-300 text-sm space-y-2 whitespace-pre-wrap">
+                                            {content.grammar_explanation}
+                                        </div>
+                                    ) : (
+                                        <p className="text-gray-500 italic">Grammar notes coming soon...</p>
+                                    )}
                                 </div>
                             </div>
                         </div>
                     )}
                     {activeTab === 'explore' && (
-                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 text-center py-12">
-                            <Target className="w-12 h-12 text-brand-gold mx-auto mb-4 opacity-50" />
-                            <h2 className="text-xl font-bold text-white mb-2">Explore the Culture</h2>
-                            <p className="text-gray-400 max-w-md mx-auto">Discover cultural nuances, tips, and contrastive analyses tailored to your profile.</p>
+                        <div className="animate-in fade-in duration-500">
+                            <h2 className="text-2xl font-bold text-white mb-4">Dialogue Example</h2>
+                            <div className="bg-brand-charcoal p-6 rounded-xl border border-gray-800 max-w-2xl">
+                                {content?.dialogue && content.dialogue.length > 0 ? (
+                                    <div className="space-y-4">
+                                        {content.dialogue.map((line, i) => (
+                                            <div key={i} className="flex gap-4">
+                                                <span className="font-bold text-brand-gold min-w-[70px]">{line.speaker}:</span>
+                                                <span className="text-gray-300">{line.text}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <p className="text-gray-500 italic">Dialogue coming soon...</p>
+                                )}
+                            </div>
                         </div>
                     )}
                     {activeTab === 'practice' && (
-                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 text-center py-12">
-                            <PenTool className="w-12 h-12 text-gray-500 mx-auto mb-4 opacity-50" />
-                            <h2 className="text-xl font-bold text-white mb-2">Guided Practice</h2>
-                            <p className="text-gray-400 max-w-md mx-auto">Engage with specific task-based exercises corresponding to the SLO 2026 standards.</p>
+                        <div className="animate-in fade-in duration-500">
+                            <h2 className="text-2xl font-bold text-white mb-4">Guided Practice</h2>
+                            <div className="bg-brand-charcoal p-6 rounded-xl border border-gray-800 max-w-2xl">
+                                {content?.practice ? (
+                                    <div className="text-gray-300 whitespace-pre-wrap">{content.practice}</div>
+                                ) : (
+                                    <p className="text-gray-500 italic">Exercises coming soon...</p>
+                                )}
+                            </div>
                         </div>
                     )}
                     {activeTab === 'communicate' && (
-                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 text-center py-12">
+                        <div className="animate-in fade-in duration-500 text-center py-12">
                             <MessageCircle className="w-12 h-12 text-brand-coral mx-auto mb-4 opacity-50" />
                             <h2 className="text-xl font-bold text-white mb-2">Communicate</h2>
                             <p className="text-gray-400 max-w-md mx-auto">Prepare to use the language. Activate your microphone or start a roleplay scenario.</p>
@@ -163,8 +225,8 @@ export default function LessonView({ id }: { id: string }) {
             </div>
 
             {/* Bottom Sticky Action Area */}
-            <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-brand-charcoal via-brand-charcoal to-transparent md:static md:bg-transparent md:p-0 flex justify-center pb-8 border-t border-gray-800/50 md:border-none pt-24 md:pt-0">
-                <button className="w-full md:w-auto bg-brand-coral hover:bg-[#ff6b3d] text-white px-12 py-4 rounded-full font-bold text-xl transition-all shadow-[0_0_30px_rgba(255,127,80,0.3)] hover:shadow-[0_0_40px_rgba(255,127,80,0.5)] hover:-translate-y-1 flex items-center justify-center gap-3">
+            <div className="fixed bottom-0 left-0 right-0 p-4 bg-brand-charcoal border-t border-gray-800 shadow-[0_-10px_30px_rgba(0,0,0,0.5)] z-20 flex justify-center">
+                <button className="max-w-md w-full bg-brand-coral hover:bg-[#ff6b3d] text-white px-8 py-4 rounded-xl font-bold text-xl transition-all flex items-center justify-center gap-3">
                     <CheckCircle className="w-6 h-6" />
                     Take Unit Quiz
                 </button>

@@ -1,21 +1,18 @@
 "use client";
 
-import { useState } from 'react';
-import dynamic from 'next/dynamic';
-
-const Onboarding = dynamic(() => import('@/components/Onboarding'), { ssr: false });
-const Dashboard = dynamic(() => import('@/components/Dashboard'), { ssr: false });
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import LandingPage from "./landing/page";
 
 export default function Home() {
-  const [isOnboardingComplete, setIsOnboardingComplete] = useState(false);
+  const router = useRouter();
 
-  return (
-    <main>
-      {!isOnboardingComplete ? (
-        <Onboarding onComplete={() => setIsOnboardingComplete(true)} />
-      ) : (
-        <Dashboard />
-      )}
-    </main>
-  );
+  useEffect(() => {
+    const onboardingComplete = localStorage.getItem("onboarding_complete");
+    if (onboardingComplete === "true") {
+      router.push("/dashboard");
+    }
+  }, [router]);
+
+  return <LandingPage />;
 }

@@ -6,6 +6,12 @@ import { ChevronRight, Check } from 'lucide-react';
 
 const QUESTIONS = [
     {
+        id: "name",
+        title: "What is your name?",
+        type: "text",
+        placeholder: "Enter your name..."
+    },
+    {
         id: "track",
         title: "What brings you to Linguaenlinea?",
         options: [
@@ -101,7 +107,18 @@ export default function Onboarding({ onComplete }: { onComplete: () => void }) {
             setIsSubmitting(true);
 
             try {
-                console.log("Saving to Supabase:", answers);
+                // Save to localStorage as requested
+                const studentId = crypto.randomUUID();
+                const studentName = answers.name || "Student"; // fallback if name not yet captured
+                const studentTrack = answers.track || "dutch";
+
+                localStorage.setItem('student_id', studentId);
+                localStorage.setItem('student_name', studentName);
+                localStorage.setItem('student_track', studentTrack);
+                localStorage.setItem('onboarding_complete', 'true');
+                localStorage.setItem('linguaenlinea_xp', '0');
+
+                console.log("Saving to Supabase & localStorage:", answers);
                 await new Promise(r => setTimeout(r, 1000));
                 onComplete();
             } catch (e) {
@@ -139,22 +156,36 @@ export default function Onboarding({ onComplete }: { onComplete: () => void }) {
                 </p>
 
                 <div className="space-y-4">
-                    {currentQ.options.map((option) => {
-                        const isSelected = currentQ.type === 'multiselect'
-                            ? (answers[currentQ.id] || []).includes(option.id)
-                            : answers[currentQ.id] === option.id;
+                    {currentQ.type === 'text' ? (
+                        <div className="space-y-2">
+                            <input
+                                type="text"
+                                placeholder={currentQ.placeholder}
+                                className="w-full p-4 rounded-xl border-2 border-gray-700 bg-gray-900 text-white focus:border-brand-coral outline-none transition-all"
+                                value={answers[currentQ.id] || ''}
+                                onChange={(e) => setAnswers({ ...answers, [currentQ.id]: e.target.value })}
+                                onKeyDown={(e) => e.key === 'Enter' && isCurrentSelectionValid() && handleNext()}
+                                autoFocus
+                            />
+                        </div>
+                    ) : (
+                        currentQ.options?.map((option) => {
+                            const isSelected = currentQ.type === 'multiselect'
+                                ? (answers[currentQ.id] || []).includes(option.id)
+                                : answers[currentQ.id] === option.id;
 
-                        return (
-                            <button
-                                key={option.id}
-                                onClick={() => handleSelect(option.id)}
-                                className={`w-full text-left p-4 rounded-xl border-2 transition-all duration-200 flex justify-between items-center ${isSelected ? 'border-brand-gold bg-brand-gold/10' : 'border-gray-700 hover:border-brand-coral hover:bg-brand-coral/5'}`}
-                            >
-                                <span className="text-lg text-gray-200">{option.label}</span>
-                                {isSelected && <Check className="text-brand-gold w-6 h-6" />}
-                            </button>
-                        );
-                    })}
+                            return (
+                                <button
+                                    key={option.id}
+                                    onClick={() => handleSelect(option.id)}
+                                    className={`w-full text-left p-4 rounded-xl border-2 transition-all duration-200 flex justify-between items-center ${isSelected ? 'border-brand-gold bg-brand-gold/10' : 'border-gray-700 hover:border-brand-coral hover:bg-brand-coral/5'}`}
+                                >
+                                    <span className="text-lg text-gray-200">{option.label}</span>
+                                    {isSelected && <Check className="text-brand-gold w-6 h-6" />}
+                                </button>
+                            );
+                        })
+                    )}
                 </div>
 
                 <div className="mt-8 flex justify-between items-center">
@@ -165,7 +196,7 @@ export default function Onboarding({ onComplete }: { onComplete: () => void }) {
                         Back
                     </button>
 
-                    {currentQ.type === 'multiselect' && (
+                    {(currentQ.type === 'multiselect' || currentQ.type === 'text' || step === QUESTIONS.length - 1) && (
                         <button
                             onClick={handleNext}
                             disabled={!isCurrentSelectionValid() || isSubmitting}

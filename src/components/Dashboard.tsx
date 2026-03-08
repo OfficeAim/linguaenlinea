@@ -3,33 +3,79 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
-import { PlayCircle, Trophy, Target, BookOpen, Clock, Lock, CheckCircle2 } from 'lucide-react';
+import {
+    BookOpen,
+    Lock,
+    Trophy,
+    MessageSquare,
+    Users,
+    Briefcase,
+    Building2,
+    Play,
+    CheckCircle2,
+    FileQuestion,
+    TrendingUp,
+    Flame,
+    Layout,
+    ChevronRight
+} from 'lucide-react';
 
 interface EnrichedLesson {
     id: string;
     title: string;
     order_index: number;
-    slo_alignment: string[];
-    status: 'locked' | 'current' | 'completed';
+    content_json: any;
+    status: 'locked' | 'unlocked' | 'completed';
     bestScore?: number;
 }
+
+const UNIT_NAMES = [
+    "¿Quién eres?",
+    "La familia",
+    "Comidas",
+    "Ciudades",
+    "Comunicaciones",
+    "Así era"
+];
+
+const ICON_MAP: Record<string, any> = {
+    "chat": MessageSquare,
+    "family_restroom": Users,
+    "work": Briefcase,
+    "location_city": Building2,
+    "book": BookOpen,
+    "play": Play,
+};
 
 export default function Dashboard() {
     const [lessons, setLessons] = useState<EnrichedLesson[]>([]);
     const [loading, setLoading] = useState(true);
     const [mounted, setMounted] = useState(false);
+    const [xp, setXp] = useState(0);
+
+    const [activeUnitNumber, setActiveUnitNumber] = useState(1);
+    const [studentName, setStudentName] = useState('Student');
 
     useEffect(() => {
         setMounted(true);
+
+        // Load XP and Name from localStorage
+        const savedXp = localStorage.getItem('linguaenlinea_xp') || '0';
+        setXp(parseInt(savedXp, 10));
+
+        const name = localStorage.getItem('student_name') || 'Student';
+        setStudentName(name);
+
         const fetchLessons = async () => {
-            // Dummy user ID since auth isn't wired up yet
-            const dummyUserId = "11111111-1111-1111-1111-111111111111";
+            // Priority to student_id from local storage
+            const studentId = localStorage.getItem('student_id') || "11111111-1111-1111-1111-111111111111";
 
             try {
-                // 1. Fetch Lessons
+                // 1. Fetch Dutch track lessons
                 const { data: lessonsData, error: lessonsError } = await supabase
                     .from('lessons')
                     .select('*')
+                    .eq('track', 'dutch')
                     .order('order_index');
 
                 if (lessonsError || !lessonsData) {
@@ -38,18 +84,16 @@ export default function Dashboard() {
                     return;
                 }
 
-                // 2. Fetch Quiz Results for progression logic
-                // Using lesson_id to match quiz_id for simplicity
+                // 2. Fetch Quiz Results
                 const { data: quizData, error: quizError } = await supabase
                     .from('quiz_results')
                     .select('*')
-                    .eq('student_id', dummyUserId);
+                    .eq('student_id', studentId);
 
                 const quizResults = quizData || [];
 
-                // 3. Process Progression Logic
-                // Lesson N+1 starts Unlocked ONLY if Lesson N is Completed (score >= 70)
-                let isPreviousCompleted = true; // Lesson 1 is unlocked by default
+                // 3. Process Progression
+                let isPreviousCompleted = true;
 
                 const enrichedLessons: EnrichedLesson[] = lessonsData.map((lesson: any) => {
                     const lessonQuizzes = quizResults.filter(q => q.quiz_id === lesson.id);
@@ -58,28 +102,33 @@ export default function Dashboard() {
                         : 0;
 
                     const isCompleted = bestScore >= 70;
-
-                    let status: 'locked' | 'current' | 'completed' = 'locked';
+                    let status: 'locked' | 'unlocked' | 'completed' = 'locked';
 
                     if (isPreviousCompleted) {
-                        status = isCompleted ? 'completed' : 'current';
+                        status = isCompleted ? 'completed' : 'unlocked';
                     }
 
-                    // For the next iteration, the previous lesson is considered completed 
-                    // only if the current lesson is completed.
                     isPreviousCompleted = isCompleted;
 
                     return {
                         id: lesson.id,
                         title: lesson.title,
                         order_index: lesson.order_index,
-                        slo_alignment: lesson.slo_alignment || [],
+                        content_json: lesson.content_json || {},
                         status,
                         bestScore
                     };
                 });
 
                 setLessons(enrichedLessons);
+
+                // Auto-select the unit of the first unlocked lesson
+                const firstUnlocked = enrichedLessons.find(l => l.status === 'unlocked');
+                if (firstUnlocked) {
+                    const unitObj = Math.ceil(firstUnlocked.order_index / 4);
+                    setActiveUnitNumber(unitObj);
+                }
+
             } catch (err) {
                 console.error("Unexpected error fetching data:", err);
             } finally {
@@ -92,146 +141,282 @@ export default function Dashboard() {
 
     if (!mounted) return null;
 
+    const completedLessons = lessons.filter(l => l.status === 'completed');
+    const completedCount = completedLessons.length;
+    const totalCount = lessons.length || 24;
+
+    const quizzesDone = completedCount;
+    const averageScore = completedCount > 0
+        ? Math.round(completedLessons.reduce((acc, curr) => acc + (curr.bestScore || 0), 0) / completedCount)
+        : 0;
+
+    // Group lessons by units
+    const groupedUnits: { unitNumber: number; name: string; lessons: EnrichedLesson[], isLocked: boolean, progress: number }[] = [];
+    for (let i = 0; i < 6; i++) {
+        const unitLessons = lessons.filter(l => l.order_index >= (i * 4) + 1 && l.order_index <= (i + 1) * 4);
+        if (unitLessons.length > 0) {
+            const isLocked = unitLessons.every(l => l.status === 'locked');
+            const unitCompleted = unitLessons.filter(l => l.status === 'completed').length;
+            const progress = Math.round((unitCompleted / unitLessons.length) * 100);
+
+            groupedUnits.push({
+                unitNumber: i + 1,
+                name: UNIT_NAMES[i],
+                lessons: unitLessons,
+                isLocked,
+                progress
+            });
+        }
+    }
+
+    const activeUnit = groupedUnits.find(u => u.unitNumber === activeUnitNumber) || groupedUnits[0];
+    const nextLesson = lessons.find(l => l.status === 'unlocked');
+
     return (
-        <div className="min-h-screen bg-brand-charcoal text-white p-6 md:p-12 font-sans">
-            <header className="flex justify-between items-center mb-12">
-                <div className="flex items-center gap-4">
-                    <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-brand-gold shadow-lg shadow-brand-gold/20">
-                        <img src="/avatar-dutch-latino.png" alt="Student Avatar" className="w-full h-full object-cover" />
-                    </div>
-                    <div>
-                        <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-brand-gold to-brand-coral">¡Hola, Estudiante!</h1>
-                        <p className="text-gray-400">Dutch Track • A1 Level</p>
-                    </div>
+        <div className="flex h-screen overflow-hidden bg-background-dark text-slate-100 font-display">
+
+            {/* 1. LEFT SIDEBAR */}
+            <aside className="w-[240px] flex-shrink-0 border-r border-slate-800/50 bg-background-dark flex flex-col p-6">
+                <div className="flex items-center gap-2 mb-1">
+                    <span className="text-2xl">🌎</span>
+                    <h1 className="text-primary text-xl font-extrabold tracking-tight">linguaenlinea</h1>
                 </div>
+                <p className="text-slate-500 text-xs font-medium mb-10 uppercase tracking-widest">aprende aprendiendo</p>
 
-                <div className="flex gap-4">
-                    <div className="flex items-center gap-2 bg-brand-charcoal-light px-4 py-2 rounded-xl border border-gray-800 shadow-md">
-                        <Trophy className="text-brand-gold w-5 h-5" />
-                        <span className="font-bold">120 XP</span>
-                    </div>
-                </div>
-            </header>
+                <div className="flex flex-col gap-1 flex-grow overflow-y-auto custom-scrollbar">
+                    <p className="text-[10px] font-bold text-slate-500 tracking-[0.2em] mb-4 uppercase">curriculum</p>
 
-            <main className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-                {/* Left Column: Learning Path */}
-                <section className="lg:col-span-2 space-y-6">
-                    <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-                        <Target className="text-brand-coral" />
-                        Your Learning Path
-                    </h2>
-
-                    <div className="space-y-4">
-                        {loading ? (
-                            <div className="p-6 bg-brand-charcoal-light rounded-2xl border border-gray-800 flex items-center justify-between">
-                                <div className="flex items-center gap-6 animate-pulse">
-                                    <div className="w-12 h-12 bg-gray-800 rounded-full"></div>
-                                    <div className="space-y-2">
-                                        <div className="h-5 bg-gray-800 w-48 rounded"></div>
-                                        <div className="h-4 bg-gray-800 w-32 rounded"></div>
-                                    </div>
+                    {groupedUnits.map((unit) => {
+                        const isActive = unit.unitNumber === activeUnitNumber;
+                        return (
+                            <button
+                                key={unit.unitNumber}
+                                disabled={unit.isLocked}
+                                onClick={() => setActiveUnitNumber(unit.unitNumber)}
+                                className={`flex items-center justify-between p-3 rounded-lg transition-all duration-200 
+                  ${isActive
+                                        ? 'bg-primary/10 border-l-4 border-primary'
+                                        : unit.isLocked
+                                            ? 'text-slate-600 cursor-not-allowed opacity-50'
+                                            : 'text-slate-400 hover:bg-slate-800/30'}`}
+                            >
+                                <div className="flex items-center gap-3">
+                                    {unit.isLocked ? (
+                                        <Lock className="w-4 h-4" />
+                                    ) : (
+                                        <BookOpen className={`w-4 h-4 ${isActive ? 'text-primary' : ''}`} />
+                                    )}
+                                    <span className={`text-sm font-semibold ${isActive ? 'text-slate-100' : ''}`}>
+                                        Unit {unit.unitNumber}
+                                    </span>
                                 </div>
-                            </div>
-                        ) : lessons.length > 0 ? (
-                            lessons.map(lesson => (
-                                <div key={lesson.id} className={`p-6 rounded-2xl flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between transition-all ${lesson.status === 'locked'
-                                    ? 'bg-brand-charcoal-light opacity-60 border border-gray-800'
-                                    : lesson.status === 'completed'
-                                        ? 'bg-brand-charcoal border border-brand-gold/20 shadow-lg shadow-brand-gold/5'
-                                        : 'bg-gradient-to-r from-brand-charcoal-light to-[#2a2a2a] border border-brand-coral/30 shadow-lg shadow-brand-coral/5 hover:border-brand-coral/50'
-                                    }`}>
-                                    <div className="flex items-center gap-6">
-                                        <div className={`w-12 h-12 shrink-0 rounded-full flex items-center justify-center font-bold text-lg ${lesson.status === 'locked'
-                                            ? 'bg-gray-800 text-gray-500'
-                                            : lesson.status === 'completed'
-                                                ? 'bg-brand-gold/20 text-brand-gold border border-brand-gold/30'
-                                                : 'bg-brand-coral/20 text-brand-coral border border-brand-coral/30'
-                                            }`}>
-                                            {lesson.status === 'completed' ? <CheckCircle2 className="w-6 h-6" /> : lesson.order_index}
-                                        </div>
-                                        <div>
-                                            <h3 className={`text-xl font-bold ${lesson.status === 'locked' ? 'text-gray-400' : 'text-gray-200'}`}>
-                                                {lesson.title}
-                                            </h3>
-                                            <div className="flex flex-wrap items-center gap-3 mt-2">
-                                                <div className="flex flex-wrap gap-2">
-                                                    {lesson.slo_alignment?.map((slo) => (
-                                                        <span key={slo} className="bg-brand-charcoal px-2 py-1 rounded text-xs border border-gray-700 text-gray-300">
-                                                            {slo}
-                                                        </span>
-                                                    ))}
+                                {!unit.isLocked && (
+                                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${isActive ? 'bg-primary text-white' : 'bg-slate-800 text-slate-400'}`}>
+                                        {unit.progress}%
+                                    </span>
+                                )}
+                            </button>
+                        );
+                    })}
+                </div>
+
+                <div className="mt-auto pt-6 border-t border-slate-800/50">
+                    <div className="flex items-center gap-3 px-3 py-2 rounded-xl bg-accent-gold/10 border border-accent-gold/20">
+                        <Trophy className="text-accent-gold w-5 h-5" />
+                        <div>
+                            <p className="text-[10px] text-accent-gold font-bold uppercase tracking-wider">Totaal XP</p>
+                            <p className="text-slate-100 font-bold">{xp.toLocaleString()} XP</p>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            {/* 2. CENTER CONTENT */}
+            <main className="flex-grow overflow-y-auto custom-scrollbar bg-background-dark p-8">
+                <div className="max-w-4xl mx-auto">
+                    {loading ? (
+                        <div className="flex flex-col items-center justify-center py-32 text-slate-500 animate-pulse">
+                            <div className="w-16 h-16 rounded-full border-4 border-slate-800 border-t-primary animate-spin mb-4"></div>
+                            <p>Cargando unidades...</p>
+                        </div>
+                    ) : (
+                        <>
+                            <header className="mb-10">
+                                <h2 className="text-3xl font-extrabold text-slate-100 mb-6">
+                                    Unidad {activeUnit?.unitNumber} — {activeUnit?.name}
+                                </h2>
+                                <div className="bg-slate-800/30 rounded-full h-4 w-full relative overflow-hidden shadow-inner">
+                                    <div
+                                        className="absolute top-0 left-0 h-full bg-primary rounded-full transition-all duration-1000 shadow-[0_0_8px_rgba(255,107,107,0.5)]"
+                                        style={{ width: `${activeUnit?.progress}%` }}
+                                    ></div>
+                                </div>
+                                <div className="flex justify-between mt-2">
+                                    <p className="text-slate-400 text-sm">Unit voortgang</p>
+                                    <p className="text-primary text-sm font-bold">{activeUnit?.progress}% voltooid</p>
+                                </div>
+                            </header>
+
+                            <div className="flex flex-col gap-4">
+                                {activeUnit?.lessons.map((lesson) => {
+                                    const isCompleted = lesson.status === 'completed';
+                                    const isUnlocked = lesson.status === 'unlocked';
+                                    const isLocked = lesson.status === 'locked';
+
+                                    // Map local icons based on index or title if needed
+                                    const LessonIcon = isLocked ? Lock : (ICON_MAP[lesson.content_json?.icon] || MessageSquare);
+
+                                    return (
+                                        <div
+                                            key={lesson.id}
+                                            className={`relative overflow-hidden transition-all duration-300 rounded-xl p-6 flex items-center justify-between
+                        ${isCompleted
+                                                    ? 'bg-[#121812] border-l-4 border-green-500 shadow-lg'
+                                                    : isUnlocked
+                                                        ? 'bg-card-dark border-l-4 border-[#FF6B6B] shadow-2xl hover:bg-[#1f1f3a]'
+                                                        : 'bg-card-dark/40 border-l-4 border-slate-700/50 opacity-80'}`}
+                                        >
+                                            <div className="flex items-center gap-6">
+                                                <div className={`w-16 h-16 rounded-xl flex items-center justify-center
+                          ${isCompleted
+                                                        ? 'bg-green-500/10'
+                                                        : isUnlocked
+                                                            ? 'bg-primary/20'
+                                                            : 'bg-slate-800'}`}>
+                                                    {isCompleted ? (
+                                                        <CheckCircle2 className="text-green-500 w-8 h-8" />
+                                                    ) : (
+                                                        <LessonIcon className={`w-8 h-8 ${isUnlocked ? 'text-primary' : 'text-slate-500'}`} />
+                                                    )}
                                                 </div>
-                                                {lesson.status === 'completed' && lesson.bestScore !== undefined && (
-                                                    <span className="text-xs font-bold text-brand-gold bg-brand-gold/10 px-2 py-1 rounded">
-                                                        Score: {lesson.bestScore}%
-                                                    </span>
+                                                <div>
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="text-slate-500 text-xs font-bold">{lesson.order_index}.</span>
+                                                        <h3 className={`text-lg font-bold ${isLocked ? 'text-slate-500' : 'text-slate-100'}`}>
+                                                            {lesson.title}
+                                                        </h3>
+                                                    </div>
+                                                    <p className={`text-sm mt-0.5 ${isLocked ? 'text-slate-600' : 'text-slate-400'}`}>
+                                                        {lesson.content_json?.can_do
+                                                            ? lesson.content_json.can_do.length > 80
+                                                                ? lesson.content_json.can_do.substring(0, 80) + "..."
+                                                                : lesson.content_json.can_do
+                                                            : "Oefen je Spaans in deze les."}
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            <div className="flex items-center gap-3">
+                                                {isLocked ? (
+                                                    <button className="bg-slate-800 text-slate-500 font-bold py-2 px-6 rounded-lg cursor-not-allowed border border-slate-700">
+                                                        Vergrendeld
+                                                    </button>
+                                                ) : isUnlocked ? (
+                                                    <Link
+                                                        href={`/lesson/${lesson.id}`}
+                                                        className="bg-[#FF6B6B] hover:bg-[#ff5252] text-white font-bold py-2 px-6 rounded-lg flex items-center gap-2 transition-all shadow-lg shadow-[#FF6B6B]/20 transition-transform active:scale-95"
+                                                    >
+                                                        Start les <Play className="w-4 h-4 fill-current" />
+                                                    </Link>
+                                                ) : (
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="text-green-500 text-xs font-bold bg-green-500/10 px-2 py-1 rounded border border-green-500/20">
+                                                            {lesson.bestScore}%
+                                                        </span>
+                                                        <Link
+                                                            href={`/lesson/${lesson.id}`}
+                                                            className="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-2 px-6 rounded-lg transition-colors border border-slate-600"
+                                                        >
+                                                            Herhaal
+                                                        </Link>
+                                                    </div>
                                                 )}
                                             </div>
                                         </div>
-                                    </div>
-
-                                    {lesson.status === 'locked' ? (
-                                        <button
-                                            disabled
-                                            className="px-6 py-3 shrink-0 rounded-xl font-bold flex items-center gap-2 transition-all bg-gray-800 text-gray-500 cursor-not-allowed border border-gray-700"
-                                        >
-                                            <Lock className="w-5 h-5" /> Locked
-                                        </button>
-                                    ) : (
-                                        <Link
-                                            href={`/lesson/${lesson.id}`}
-                                            className={`px-6 py-3 shrink-0 rounded-xl font-bold flex items-center gap-2 transition-all ${lesson.status === 'completed'
-                                                ? 'bg-brand-charcoal-light hover:bg-gray-700 text-brand-gold border border-gray-700 hover:border-brand-gold/50 shadow-md'
-                                                : 'bg-brand-coral hover:bg-[#ff6b3d] text-white shadow-md shadow-brand-coral/20'
-                                                }`}
-                                        >
-                                            {lesson.status === 'completed' ? (
-                                                <><Clock className="w-5 h-5" /> Review</>
-                                            ) : (
-                                                <><PlayCircle className="w-5 h-5" /> Start Lesson</>
-                                            )}
-                                        </Link>
-                                    )}
-                                </div>
-                            ))
-                        ) : (
-                            <div className="p-8 bg-brand-charcoal-light rounded-2xl border border-gray-800 text-center shadow-lg">
-                                <Clock className="w-12 h-12 text-brand-gold mx-auto mb-4 opacity-50" />
-                                <h3 className="text-xl font-bold text-gray-200 mb-2">Preparing your custom path...</h3>
-                                <p className="text-gray-400">We are tailoring the perfect Spanish lessons based on your interests.</p>
+                                    );
+                                })}
                             </div>
-                        )}
-                    </div>
-                </section>
-
-                {/* Right Column: Profile & Interests */}
-                <aside className="space-y-8">
-                    <div className="bg-brand-charcoal-light p-6 rounded-2xl border border-gray-800 relative overflow-hidden shadow-xl">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-brand-coral/10 rounded-bl-full -mr-8 -mt-8"></div>
-                        <h2 className="text-xl font-bold mb-4 flex items-center gap-2 relative z-10">
-                            <BookOpen className="text-brand-coral w-5 h-5" />
-                            Focus Areas
-                        </h2>
-                        <ul className="space-y-3 relative z-10">
-                            <li className="flex items-center justify-between p-3 bg-brand-charcoal rounded-xl border border-gray-800 shadow-sm md:shadow-none hover:border-gray-700 transition-colors">
-                                <span className="text-gray-300">🎵 Salsa & Reggaeton</span>
-                                <span className="text-brand-gold text-xs font-bold px-2 py-1 bg-brand-gold/10 rounded">Active</span>
-                            </li>
-                            <li className="flex items-center justify-between p-3 bg-brand-charcoal rounded-xl border border-gray-800 shadow-sm md:shadow-none hover:border-gray-700 transition-colors">
-                                <span className="text-gray-300">✈️ Travel in Mexico</span>
-                                <span className="text-brand-gold text-xs font-bold px-2 py-1 bg-brand-gold/10 rounded">Active</span>
-                            </li>
-                        </ul>
-                    </div>
-
-                    {/* Logo element for branding */}
-                    <div className="flex justify-center pt-8 opacity-40 hover:opacity-100 transition-opacity">
-                        <img src="/logo-dark-final.png" alt="Linguaenlinea" className="max-w-[200px] object-contain mix-blend-screen" />
-                    </div>
-                </aside>
-
+                        </>
+                    )}
+                </div>
             </main>
+
+            {/* 3. RIGHT PANEL */}
+            <aside className="w-[320px] flex-shrink-0 border-l border-slate-800/50 bg-background-dark p-8 flex flex-col hidden xl:flex">
+                <div className="flex flex-col items-center text-center mb-10">
+                    <div className="relative mb-4 group">
+                        <div className="w-24 h-24 rounded-full bg-card-dark flex items-center justify-center border-2 border-slate-700 shadow-xl overflow-hidden transition-transform group-hover:scale-105">
+                            <span className="text-5xl">🧑‍🎓</span>
+                        </div>
+                        <div className="absolute bottom-1 right-1 w-6 h-6 bg-green-500 rounded-full border-4 border-background-dark shadow-md"></div>
+                    </div>
+                    <h3 className="text-xl font-bold text-slate-100">{studentName}</h3>
+                    <span className="text-xs font-bold text-primary bg-primary/10 px-3 py-1 rounded-full mt-2 border border-primary/20">
+                        Nederlands Track A1
+                    </span>
+                </div>
+
+                <div className="mb-8 p-4 bg-slate-800/20 rounded-2xl border border-slate-800/50">
+                    <div className="flex justify-between items-end mb-2">
+                        <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Dagelijks Doel</p>
+                        <p className="text-sm font-bold text-accent-gold">{xp} / 500 XP</p>
+                    </div>
+                    <div className="bg-slate-800/50 rounded-full h-2 w-full shadow-inner overflow-hidden">
+                        <div
+                            className="h-full bg-accent-gold rounded-full transition-all duration-1000 shadow-[0_0_8px_#FFB800]"
+                            style={{ width: `${Math.min((xp / 500) * 100, 100)}%` }}
+                        ></div>
+                    </div>
+                    <p className="text-[10px] text-slate-600 mt-2 text-center font-medium">Nog {(500 - xp) > 0 ? (500 - xp) : 0} XP tot je doel!</p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 mb-8">
+                    <div className="bg-card-dark p-4 rounded-xl border border-slate-800/50 hover:border-primary/30 transition-colors">
+                        <p className="text-[10px] text-slate-500 font-bold uppercase mb-1">Voltooid</p>
+                        <div className="flex items-center gap-2">
+                            <CheckCircle2 className="text-primary w-4 h-4" />
+                            <p className="text-xl font-extrabold text-slate-100">{completedCount}</p>
+                        </div>
+                    </div>
+                    <div className="bg-card-dark p-4 rounded-xl border border-slate-800/50 hover:border-primary/30 transition-colors">
+                        <p className="text-[10px] text-slate-500 font-bold uppercase mb-1">Quizzen</p>
+                        <div className="flex items-center gap-2">
+                            <FileQuestion className="text-primary w-4 h-4" />
+                            <p className="text-xl font-extrabold text-slate-100">{quizzesDone}</p>
+                        </div>
+                    </div>
+                    <div className="bg-card-dark p-4 rounded-xl border border-slate-800/50 hover:border-primary/30 transition-colors">
+                        <p className="text-[10px] text-slate-500 font-bold uppercase mb-1">Score</p>
+                        <div className="flex items-center gap-2">
+                            <TrendingUp className="text-primary w-4 h-4" />
+                            <p className="text-xl font-extrabold text-slate-100">{averageScore}%</p>
+                        </div>
+                    </div>
+                    <div className="bg-card-dark p-4 rounded-xl border border-slate-800/50 hover:border-primary/30 transition-colors">
+                        <p className="text-[10px] text-slate-500 font-bold uppercase mb-1">Streak</p>
+                        <div className="flex items-center gap-2">
+                            <Flame className="text-primary w-4 h-4" />
+                            <p className="text-xl font-extrabold text-slate-100">1</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="mt-auto">
+                    {nextLesson ? (
+                        <Link
+                            href={`/lesson/${nextLesson.id}`}
+                            className="w-full bg-primary hover:bg-primary/90 text-white font-extrabold py-4 rounded-xl shadow-lg shadow-primary/20 flex items-center justify-center gap-2 transition-transform active:scale-95"
+                        >
+                            Verder {nextLesson.order_index} <ChevronRight className="w-5 h-5" />
+                        </Link>
+                    ) : (
+                        <button className="w-full bg-slate-800 text-slate-500 font-extrabold py-4 rounded-xl cursor-not-allowed">
+                            Alles voltooid!
+                        </button>
+                    )}
+                    <p className="text-center text-slate-500 text-xs mt-4">Klaar voor de volgende stap?</p>
+                </div>
+            </aside>
         </div>
     );
 }

@@ -1,16 +1,25 @@
 @import "tailwindcss";
 
-@theme {
-  --color-brand-charcoal: #121212;
-  --color-brand-charcoal-light: #1E1E1E;
-  --color-brand-coral: #FF7F50;
-  --color-brand-coral-hover: #FF9B7A;
-  --color-brand-gold: #D4AF37;
-  --color-brand-gold-hover: #E5C354;
+:root {
+  --font-display: var(--font-jakarta),
+    'Plus Jakarta Sans', sans-serif;
 }
 
 body {
-  background-color: var(--color-brand-charcoal);
+  background-color: #0D0D0D;
   color: #F3F4F6;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-display);
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #2a2a40;
+  border-radius: 10px;
 }

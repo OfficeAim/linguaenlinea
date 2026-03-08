@@ -7,12 +7,19 @@ const config: Config = {
     theme: {
         extend: {
             colors: {
+                primary: "#FF6B6B",
+                "background-dark": "#0D0D0D",
+                "card-dark": "#1a1a2e",
+                "accent-gold": "#FFB800",
                 brand: {
                     charcoal: "#121212",
                     "charcoal-light": "#1a1a2e",
                     coral: "#FF6B6B",
                     gold: "#FFB800",
                 },
+            },
+            fontFamily: {
+                display: ["var(--font-jakarta)", "Plus Jakarta Sans", "sans-serif"],
             },
             keyframes: {
                 shake: {

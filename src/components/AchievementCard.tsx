@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef } from 'react';
-import html2canvas from 'html2canvas';
 
 interface AchievementCardProps {
     studentName: string;
@@ -13,6 +12,161 @@ interface AchievementCardProps {
     facebookShareUrl: string;
     onShareFacebook: () => void;
 }
+
+const cardStyle: React.CSSProperties = {
+    width: '400px',
+    height: '400px',
+    backgroundColor: '#0D0D0D',
+    backgroundImage: 'linear-gradient(to bottom, #0D0D0D, #1a1a2e)',
+    border: '2px solid #FFB800',
+    borderRadius: '16px',
+    overflow: 'hidden',
+    fontFamily: 'system-ui, -apple-system, sans-serif',
+    display: 'flex',
+    flexDirection: 'column',
+    position: 'relative'
+};
+
+const topBannerStyle: React.CSSProperties = {
+    backgroundColor: '#FF6B6B',
+    height: '48px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: '14px',
+    letterSpacing: '0.1em',
+    textTransform: 'uppercase'
+};
+
+const middleStyle: React.CSSProperties = {
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '24px',
+    position: 'relative',
+    zIndex: 10
+};
+
+const avatarWrapperStyle: React.CSSProperties = {
+    width: '80px',
+    height: '80px',
+    borderRadius: '50%',
+    border: '2px solid #FFB800',
+    backgroundColor: '#1a1a2e',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+    marginBottom: '8px'
+};
+
+const avatarImgStyle: React.CSSProperties = {
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover'
+};
+
+const avatarPlaceholderStyle: React.CSSProperties = {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: '30px',
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#FF6B6B'
+};
+
+const studentNameStyle: React.CSSProperties = {
+    color: 'white',
+    fontWeight: '600',
+    fontSize: '18px',
+    marginTop: '4px',
+    textAlign: 'center',
+    padding: '0 16px'
+};
+
+const scoreContainerStyle: React.CSSProperties = {
+    margin: '16px 0',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center'
+};
+
+const scoreStyle: React.CSSProperties = {
+    fontSize: '60px',
+    fontWeight: '900',
+    color: '#FF6B6B',
+    lineHeight: 1
+};
+
+const starsStyle: React.CSSProperties = {
+    color: '#FFB800',
+    fontSize: '18px',
+    marginTop: '4px',
+    letterSpacing: '0.1em'
+};
+
+const lessonInfoContainerStyle: React.CSSProperties = {
+    textAlign: 'center',
+    marginTop: '8px',
+    padding: '0 24px',
+    width: '100%'
+};
+
+const lessonTitleStyle: React.CSSProperties = {
+    color: '#e5e7eb',
+    fontSize: '14px',
+    fontWeight: '500',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+    width: '100%',
+    maxWidth: '340px'
+};
+
+const dateStyle: React.CSSProperties = {
+    color: '#6b7280',
+    fontSize: '12px',
+    marginTop: '4px'
+};
+
+const bottomBannerStyle: React.CSSProperties = {
+    backgroundColor: '#1a1a2e',
+    borderTop: '1px solid rgba(255,184,0,0.3)',
+    height: '56px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '8px',
+    position: 'relative',
+    zIndex: 10
+};
+
+const brandStyle: React.CSSProperties = {
+    color: '#FF6B6B',
+    fontSize: '14px',
+    fontWeight: '600',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px'
+};
+
+const dotStyle: React.CSSProperties = {
+    color: '#6b7280',
+    fontSize: '12px'
+};
+
+const taglineStyle: React.CSSProperties = {
+    color: '#9ca3af',
+    fontSize: '12px',
+    fontStyle: 'italic'
+};
 
 export default function AchievementCard({
     studentName,
@@ -27,95 +181,99 @@ export default function AchievementCard({
     const cardRef = useRef<HTMLDivElement>(null);
 
     const handleDownload = async () => {
+        const html2canvas = (await import('html2canvas')).default;
+
         if (!cardRef.current) return;
+
         try {
             const canvas = await html2canvas(cardRef.current, {
                 useCORS: true,
-                backgroundColor: '#151515', // Matched dark theme background
-                scale: 2 // Higher resolution
+                scale: 2,
+                backgroundColor: '#0D0D0D', // Fixed dark theme background
+                logging: false,
+                ignoreElements: (el) => {
+                    return false;
+                }
             });
+
             const link = document.createElement('a');
             link.download = `linguaenlinea-les${lessonNumber}-${score}pct.png`;
             link.href = canvas.toDataURL('image/png');
             link.click();
-        } catch (error) {
-            console.error('Failed to generate image:', error);
+
+        } catch (err) {
+            console.error('Download error:', err);
         }
     };
 
     return (
         <div className="flex flex-col items-center mb-8">
-            {/* The Shareable Card */}
-            <div
-                ref={cardRef}
-                className="w-[400px] h-[400px] flex flex-col justify-between bg-gradient-to-b from-[#0D0D0D] to-[#1a1a2e] border-2 border-[#FFB800] rounded-2xl overflow-hidden shadow-2xl relative"
-            >
+            {/* The Shareable Card - 100% Inline Styles for html2canvas compatibility */}
+            <div ref={cardRef} style={cardStyle}>
                 {/* 1. TOP BANNER */}
-                <div className="bg-brand-coral h-12 flex items-center justify-center">
-                    <span className="text-white font-bold text-sm tracking-widest uppercase">
-                        🏆 MILESTONE BEHAALD
-                    </span>
+                <div style={topBannerStyle}>
+                    🏆 MILESTONE BEHAALD
                 </div>
 
                 {/* 2. MIDDLE SECTION */}
-                <div className="flex flex-col items-center py-6 flex-1 justify-center z-10 relative">
+                <div style={middleStyle}>
                     {/* Avatar */}
                     {studentAvatar ? (
-                        <div className="w-20 h-20 rounded-full border-2 border-[#FFB800] overflow-hidden mb-2 bg-brand-charcoal">
+                        <div style={avatarWrapperStyle}>
                             <img
                                 src={studentAvatar}
                                 alt={studentName}
-                                className="w-full h-full object-cover"
+                                style={avatarImgStyle}
                                 crossOrigin="anonymous"
                             />
                         </div>
                     ) : (
-                        <div className="w-20 h-20 rounded-full border-2 border-[#FFB800] bg-brand-coral flex items-center justify-center mb-2">
-                            <span className="text-white font-bold text-3xl">
+                        <div style={{ ...avatarWrapperStyle, backgroundColor: '#FF6B6B' }}>
+                            <span style={avatarPlaceholderStyle}>
                                 {studentName ? studentName.charAt(0).toUpperCase() : '?'}
                             </span>
                         </div>
                     )}
 
                     {/* Student Name */}
-                    <div className="text-white font-semibold text-lg mt-1 text-center px-4">
+                    <div style={studentNameStyle}>
                         {studentName || 'Student'}
                     </div>
 
                     {/* Score display */}
-                    <div className="my-4 flex flex-col items-center">
-                        <span className="text-brand-coral text-6xl font-black drop-shadow-md">
+                    <div style={scoreContainerStyle}>
+                        <span style={scoreStyle}>
                             {score}%
                         </span>
-                        <div className="text-[#FFB800] text-lg mt-1 tracking-widest">
+                        <div style={starsStyle}>
                             {score === 100 ? '⭐⭐⭐' : score >= 70 ? '⭐⭐' : '⭐'}
                         </div>
                     </div>
 
                     {/* Lesson Info */}
-                    <div className="text-center mt-2 px-6">
-                        <p className="text-gray-200 text-sm font-medium truncate w-full max-w-[340px]">
+                    <div style={lessonInfoContainerStyle}>
+                        <div style={lessonTitleStyle}>
                             Les {lessonNumber}: {lessonTitle}
-                        </p>
-                        <p className="text-gray-500 text-xs mt-1">
+                        </div>
+                        <div style={dateStyle}>
                             Behaald op {achievedDate}
-                        </p>
+                        </div>
                     </div>
                 </div>
 
                 {/* 3. BOTTOM BANNER */}
-                <div className="bg-[#1a1a2e] border-t border-[#FFB800]/30 h-14 flex items-center justify-center gap-2 relative z-10">
-                    <span className="text-brand-coral text-sm font-semibold tracking-wide flex items-center gap-1.5">
-                        <span className="text-base">🌐</span> linguaenlinea.eu
+                <div style={bottomBannerStyle}>
+                    <span style={brandStyle}>
+                        <span style={{ fontSize: '16px' }}>🌐</span> linguaenlinea.eu
                     </span>
-                    <span className="text-gray-500 text-xs mt-0.5">•</span>
-                    <span className="text-gray-400 text-xs italic mt-0.5">
+                    <span style={dotStyle}>•</span>
+                    <span style={taglineStyle}>
                         aprende aprendiendo
                     </span>
                 </div>
             </div>
 
-            {/* ACTION BUTTONS */}
+            {/* ACTION BUTTONS (Tailwind is ok here because html2canvas only grabs cardRef) */}
             <div className="flex flex-col items-center w-[400px] mt-5">
                 <div className="flex flex-row items-center justify-center gap-3 w-full">
                     {/* Download Button */}

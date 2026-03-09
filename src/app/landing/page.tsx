@@ -14,9 +14,46 @@ import {
     Facebook,
     CheckCircle2,
     Play,
-    Users
+    Users,
+    BookOpen
 } from "lucide-react";
 import { ContainerScroll } from "@/components/ui/container-scroll-animation";
+import AnimatedShaderBackground from "@/components/ui/animated-shader-background";
+import { useInView, animate } from "framer-motion";
+import { GraduationCap } from "lucide-react";
+import { TypewriterTestimonial } from "@/components/ui/typewriter-testimonial";
+import { useRef, useEffect } from "react";
+import { SplineScene } from "@/components/ui/splite";
+import { AudioWavePlayer } from "@/components/ui/audio-wave-player";
+import Image from "next/image";
+
+const StatItem = ({ end, label, icon: Icon, suffix = "" }: { end: number, label: string, icon: any, suffix?: string }) => {
+    const nodeRef = useRef<HTMLDivElement>(null);
+    const isInView = useInView(nodeRef, { once: true });
+
+    useEffect(() => {
+        if (isInView && nodeRef.current) {
+            const node = nodeRef.current;
+            const controls = animate(0, end, {
+                duration: 2,
+                onUpdate(value) {
+                    node.textContent = Math.round(value) + suffix;
+                },
+            });
+            return () => controls.stop();
+        }
+    }, [isInView, end, suffix]);
+
+    return (
+        <div className="bg-white/5 border border-white/10 rounded-3xl p-8 flex flex-col items-center gap-4 hover:border-primary/50 transition-colors">
+            <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center">
+                <Icon className="w-6 h-6 text-primary" />
+            </div>
+            <div className="text-4xl font-black text-[#FF6B6B]" ref={nodeRef}>0{suffix}</div>
+            <div className="text-slate-400 font-bold text-sm uppercase tracking-wider text-center">{label}</div>
+        </div>
+    );
+};
 
 export default function LandingPage() {
     const router = useRouter();
@@ -38,9 +75,14 @@ export default function LandingPage() {
             <nav className="sticky top-0 z-50 w-full border-b border-white/10 bg-background-dark/80 backdrop-blur-md">
                 <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
                     <div className="flex flex-col">
-                        <div className="flex items-center gap-2">
-                            <span className="text-2xl">🌎</span>
-                            <span className="text-primary font-extrabold text-xl tracking-tight">linguaenlinea</span>
+                        <div className="flex items-center gap-3">
+                            <Image
+                                src="/images/logo-dark-final.png"
+                                alt="Linguaenlinea"
+                                width={200}
+                                height={67}
+                                className="h-14 w-auto object-contain"
+                            />
                         </div>
                         <span className="text-[10px] uppercase tracking-widest text-slate-500 font-bold ml-8">aprende aprendiendo</span>
                     </div>
@@ -58,6 +100,7 @@ export default function LandingPage() {
 
             {/* HERO SECTION */}
             <section className="relative min-h-[90vh] flex flex-col items-center justify-center overflow-hidden px-6 text-center bg-mesh">
+                <AnimatedShaderBackground />
                 <div className="absolute inset-0 pointer-events-none select-none overflow-hidden opacity-10">
                     <span className="absolute top-1/4 left-10 text-primary text-4xl font-bold rotate-12">¡Hola!</span>
                     <span className="absolute top-1/3 right-20 text-primary text-3xl font-bold -rotate-6">Me llamo...</span>
@@ -124,19 +167,77 @@ export default function LandingPage() {
                     <p className="text-slate-400 text-xl font-display">Echte stemmen. Slimme uitleg.</p>
                 </div>
                 <div className="grid md:grid-cols-2 gap-8">
-                    <div className="group p-8 rounded-3xl bg-primary/10 border border-primary/20 hover:border-primary/50 transition-all">
-                        <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-primary/20 transition-transform group-hover:scale-110">
-                            <Volume2 className="text-white w-8 h-8" />
+                    <div className="relative bg-black/50 border border-white/10 rounded-3xl overflow-hidden p-8 flex flex-col items-center justify-center gap-6 min-h-[300px]">
+
+                        {/* Cuban flag background */}
+                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden">
+                            <span className="text-[280px] opacity-15 blur-[2px] scale-150">🇨🇺</span>
                         </div>
-                        <h3 className="text-2xl font-bold text-white mb-3">Echte Cubaanse audio</h3>
-                        <p className="text-slate-300 leading-relaxed font-display">Geen robots, maar authentieke stemmen. Leer de taal horen zoals die echt gesproken wordt.</p>
+
+                        <div className="relative z-10 flex flex-col items-center gap-6">
+                            <div className="text-center">
+                                <div className="text-4xl mb-3">🎵</div>
+                                <h3 className="text-xl font-black text-white mb-2">
+                                    Echte Cubaanse audio
+                                </h3>
+                                <p className="text-slate-400 text-sm max-w-xs text-center">
+                                    Geen robots, maar authentieke stemmen.
+                                    Leer de taal horen zoals die echt gesproken wordt.
+                                </p>
+                            </div>
+
+                            <AudioWavePlayer
+                                src="/audio/U1 L1 A1.mp3"
+                                label="Luister fragment — Les 1.1"
+                            />
+                        </div>
                     </div>
-                    <div className="group p-8 rounded-3xl bg-[#FFB800]/10 border border-[#FFB800]/20 hover:border-[#FFB800]/50 transition-all">
-                        <div className="w-16 h-16 bg-[#FFB800] rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-gold/20 transition-transform group-hover:scale-110">
-                            <Bot className="text-black w-8 h-8" />
+
+                    <div className="relative bg-black/50 border border-white/10 rounded-3xl overflow-hidden">
+                        {/* Desktop: Spline robot */}
+                        <div className="hidden md:block h-[300px] relative">
+                            <SplineScene
+                                scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
+                                className="w-full h-full"
+                            />
                         </div>
-                        <h3 className="text-2xl font-bold text-white mb-3">AI-uitleg op maat</h3>
-                        <p className="text-slate-300 leading-relaxed font-display">Gepersonaliseerd op basis van SLO Kerndoelen 37-39 en NotebookLM technologie voor een dieper begrip.</p>
+
+                        {/* Mobile fallback */}
+                        <div className="md:hidden flex items-center justify-center h-32 text-6xl">
+                            🤖
+                        </div>
+
+                        <div className="p-6">
+                            <a
+                                href="https://notebooklm.google.com"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-2 mb-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl px-4 py-2 transition-all group"
+                            >
+                                <svg width="20" height="20" viewBox="0 0 192 192" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <rect width="192" height="192" rx="40" fill="#1A73E8" />
+                                    <path d="M96 40C65.07 40 40 65.07 40 96s25.07 56 56 56 56-25.07 56-56S126.93 40 96 40zm0 96c-22.09 0-40-17.91-40-40s17.91-40 40-40 40 17.91 40 40-17.91 40-40 40z" fill="white" />
+                                    <path d="M96 72c-13.25 0-24 10.75-24 24s10.75 24 24 24 24-10.75 24-24-10.75-24-24-24z" fill="white" />
+                                </svg>
+                                <div className="flex flex-col text-left">
+                                    <span className="text-white text-xs font-bold leading-tight">
+                                        NotebookLM
+                                    </span>
+                                    <span className="text-slate-400 text-[10px] leading-tight">
+                                        by Google
+                                    </span>
+                                </div>
+                                <svg className="w-3 h-3 text-slate-400 group-hover:text-white transition-colors ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                </svg>
+                            </a>
+                            <h3 className="text-xl font-black text-white mb-2">
+                                AI-uitleg op maat
+                            </h3>
+                            <p className="text-slate-400">
+                                Gepersonaliseerd op basis van SLO Kerndoelen 37-39 en NotebookLM technologie voor een dieper begrip.
+                            </p>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -233,8 +334,9 @@ export default function LandingPage() {
             </section>
 
             {/* BADGES & COMMUNITY */}
-            <section className="py-12 px-6 overflow-hidden">
-                <div className="max-w-6xl mx-auto">
+            <section className="relative py-24 px-6 overflow-hidden">
+                <AnimatedShaderBackground />
+                <div className="relative z-10 max-w-6xl mx-auto">
                     <h2 className="text-3xl font-extrabold text-white mb-8 text-center">Verdien je badges. Deel je succes.</h2>
                     <div className="flex flex-wrap justify-center gap-8">
                         <div className="w-64 bg-card-dark p-6 rounded-2xl border border-white/10 rotate-3 transform hover:rotate-0 transition-all hover:scale-110 shadow-xl">
@@ -271,6 +373,60 @@ export default function LandingPage() {
                             <p className="text-[10px] text-center mt-4 text-slate-600 font-bold uppercase tracking-widest">linguaenlinea.eu</p>
                         </div>
                     </div>
+                </div>
+            </section>
+
+            {/* STATS COUNTER */}
+            <section className="py-24 px-6 bg-gradient-to-b from-[#1a1a2e] to-[#0D0D0D]">
+                <div className="max-w-6xl mx-auto">
+                    <div className="text-center mb-16">
+                        <h2 className="text-4xl font-black text-white mb-4">
+                            Groeiende <span className="text-primary">gemeenschap</span>
+                        </h2>
+                        <div className="h-1 w-20 bg-primary mx-auto rounded-full opacity-50"></div>
+                    </div>
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+                        <StatItem end={24} label="Leerlingen ingeschreven" icon={Users} suffix="+" />
+                        <StatItem end={87} label="Lessen voltooid" icon={BookOpen} suffix="+" />
+                        <StatItem end={12} label="Scholen & docenten" icon={GraduationCap} suffix="+" />
+                        <StatItem end={3} label="Landen bereikt 🌎" icon={Globe} suffix="+" />
+                    </div>
+                </div>
+            </section>
+
+            {/* TESTIMONIALS */}
+            <section className="py-24 px-6 bg-[#0D0D0D]">
+                <div className="max-w-4xl mx-auto text-center">
+                    <h2 className="text-4xl font-black text-white mb-4">
+                        Wat zeggen onze <span className="text-[#FF6B6B]">leerlingen?</span>
+                    </h2>
+                    <p className="text-slate-400 mb-16">Beweeg over een avatar om te lezen</p>
+                    <TypewriterTestimonial testimonials={[
+                        {
+                            image: "/images/Finn_Leerling_headshot.png",
+                            text: "Ik snap eindelijk hoe Spaans werkt. De lessen zijn kort en duidelijk, niet saai zoals op school.",
+                            name: "Finn",
+                            role: "Leerling, 14 jaar"
+                        },
+                        {
+                            image: "/images/Noor__Leerling_headshot.png",
+                            text: "Ik heb in 2 weken meer geleerd dan in een heel jaar met een boek. Super handig!",
+                            name: "Noor",
+                            role: "Leerling, 16 jaar"
+                        },
+                        {
+                            image: "/images/Marieke__Moeder_headshot.png",
+                            text: "Mijn dochter gebruikt het elke avond. Gratis, veilig en echt effectief. Aanrader!",
+                            name: "Marieke",
+                            role: "Moeder"
+                        },
+                        {
+                            image: "/images/Sandra__Spaans_docent_headshot.png",
+                            text: "Eindelijk een platform dat aansluit bij het Nederlandse schoolprogramma. Ik verwijs al mijn leerlingen door.",
+                            name: "Sandra",
+                            role: "Spaans docent"
+                        }
+                    ]} />
                 </div>
             </section>
 
@@ -315,9 +471,9 @@ export default function LandingPage() {
                         <p className="text-white/80 text-xl font-display">Gratis. Altijd. Voor iedereen.</p>
                         <button
                             onClick={handleStart}
-                            className="bg-white text-primary px-12 py-5 rounded-2xl font-black text-xl shadow-2xl transition-all hover:scale-105 active:scale-95 flex items-center gap-3"
+                            className="bg-[#0D0D0D] text-white px-12 py-5 rounded-2xl font-black text-xl shadow-2xl transition-all hover:scale-105 active:scale-95 flex items-center gap-3"
                         >
-                            <Play className="w-6 h-6 fill-current text-primary" /> Start nu gratis
+                            <Play className="w-6 h-6 fill-current text-white" /> Start nu gratis
                         </button>
                     </div>
                     <div className="absolute -top-24 -right-24 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
@@ -329,16 +485,22 @@ export default function LandingPage() {
             <footer className="py-10 px-6 border-t border-white/5 bg-background-dark">
                 <div className="max-w-6xl mx-auto flex flex-col items-center gap-6">
                     <div className="flex flex-col items-center">
-                        <div className="flex items-center gap-2 mb-1">
-                            <span className="text-primary text-xl">🌎</span>
-                            <span className="text-primary font-extrabold text-xl tracking-tight">linguaenlinea.eu</span>
+                        <div className="flex items-center gap-3 mb-6">
+                            <Image
+                                src="/images/logo-dark-final.png"
+                                alt="Linguaenlinea"
+                                width={180}
+                                height={60}
+                                className="h-12 w-auto object-contain"
+                            />
                         </div>
                         <span className="text-[10px] uppercase tracking-widest text-slate-500 font-bold">aprende aprendiendo</span>
                     </div>
                     <div className="flex flex-wrap justify-center gap-8 text-slate-400 font-bold text-sm font-display">
                         <a className="hover:text-primary transition-colors" href="/over-ons">Over ons</a>
-                        <a className="hover:text-primary transition-colors" href="#">Contact</a>
-                        <a className="hover:text-primary transition-colors" href="#">Privacy</a>
+                        <a className="hover:text-primary transition-colors" href="/contact">Contact</a>
+                        <a className="hover:text-primary transition-colors" href="/privacy">Privacy</a>
+                        <a className="hover:text-primary transition-colors" href="/faq">FAQ</a>
                         <a className="hover:text-primary transition-colors" href="https://www.facebook.com/linguaenlinea" target="_blank">Facebook</a>
                     </div>
                     <div className="text-slate-600 text-xs font-medium font-display">

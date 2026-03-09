@@ -1,6 +1,7 @@
 "use client";
 
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
+import Image from 'next/image';
 
 interface AchievementCardProps {
     studentName: string;
@@ -264,7 +265,16 @@ export default function AchievementCard({
                 {/* 3. BOTTOM BANNER */}
                 <div style={bottomBannerStyle}>
                     <span style={brandStyle}>
-                        <span style={{ fontSize: '16px' }}>🌐</span> linguaenlinea.eu
+                        <div className="flex items-center gap-2">
+                            <Image
+                                src="/images/logo-dark-final.png"
+                                alt="Linguaenlinea"
+                                width={100}
+                                height={24}
+                                className="h-4 w-auto object-contain"
+                            />
+                            <span className="text-slate-500 font-bold tracking-tight">.eu</span>
+                        </div>
                     </span>
                     <span style={dotStyle}>•</span>
                     <span style={taglineStyle}>

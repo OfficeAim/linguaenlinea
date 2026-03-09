@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { Heart, BookOpen, Mic, Users, ArrowLeft, Star, Zap } from "lucide-react";
 import Image from "next/image";
+import { DotPattern } from "@/components/ui/dot-pattern";
 
 // ─── PARTICLE TEXT ENGINE (brand colors) ─────────────────────────
 interface Vector2D { x: number; y: number }
@@ -165,117 +166,143 @@ export default function OverOnsPage() {
     ]
 
     return (
-        <div className="min-h-screen bg-[#0D0D0D] text-slate-100 antialiased overflow-x-hidden">
-
-            {/* NAV */}
-            <nav className="sticky top-0 z-50 w-full border-b border-white/10 bg-[#0D0D0D]/80 backdrop-blur-md">
-                <div className="max-w-7xl mx-auto px-6 h-16 flex items-center gap-4">
-                    <button onClick={() => router.back()} className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors text-sm font-bold">
-                        <ArrowLeft className="w-4 h-4" /> Terug
-                    </button>
-                    <div className="flex items-center gap-2 ml-4">
-                        <span className="text-xl">🌎</span>
-                        <span className="text-[#FF6B6B] font-extrabold text-lg tracking-tight">linguaenlinea</span>
-                    </div>
-                </div>
-            </nav>
-
-            {/* 1 — PARTICLE HERO */}
-            <section className="relative flex flex-col items-center pt-14 pb-2 px-6 overflow-hidden">
-                <div className="absolute inset-0 pointer-events-none">
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] bg-[#FF6B6B]/5 rounded-full blur-3xl" />
-                </div>
-                <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
-                    className="relative z-10 inline-flex items-center px-4 py-1.5 rounded-full border border-[#FF6B6B]/50 bg-[#FF6B6B]/10 text-[#FF6B6B] text-xs font-bold tracking-wide uppercase mb-4">
-                    <Star className="w-3 h-3 mr-2" /> Over Ons
-                </motion.div>
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1, delay: 0.2 }} className="relative z-10 w-full flex justify-center">
-                    <ParticleHero />
-                </motion.div>
-                <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.7, delay: 0.9 }}
-                    className="relative z-10 text-slate-500 text-sm text-center mt-1 mb-2">
-                    Een leraar met een missie. Een platform gebouwd met liefde voor talen.
-                </motion.p>
-            </section>
-
-
-            {/* 3 — MISSIE */}
-            <section className="py-20 px-6 max-w-6xl mx-auto">
-                <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="text-center mb-12">
-                    <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-3">Mijn missie</h2>
-                    <p className="text-slate-400 max-w-2xl mx-auto">Spaans leren hoeft niet duur of moeilijk te zijn — als de materialen goed gestructureerd en op een leuke manier worden gepresenteerd.</p>
-                </motion.div>
-                <div className="grid md:grid-cols-3 gap-6">
-                    {pillars.map((pillar, i) => (
-                        <motion.div key={pillar.title} initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.15 }}
-                            className={`p-8 rounded-3xl ${pillar.bg} border ${pillar.border} hover:scale-105 transition-transform`}>
-                            <div className={`w-12 h-12 rounded-2xl ${pillar.bg} border ${pillar.border} flex items-center justify-center mb-5`}>
-                                <pillar.icon className={`w-6 h-6 ${pillar.color}`} />
-                            </div>
-                            <h3 className={`text-xl font-bold mb-3 ${pillar.color}`}>{pillar.title}</h3>
-                            <p className="text-slate-300 text-sm leading-relaxed">{pillar.nl}</p>
-                        </motion.div>
-                    ))}
-                </div>
-            </section>
-
-            {/* 4 — VERHAAL */}
-            <section className="py-8 px-6 max-w-4xl mx-auto">
-                <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
-                    className="bg-[#1a1a2e] border border-white/10 rounded-3xl p-10 md:p-14 shadow-2xl relative overflow-hidden">
-                    <div className="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-[#FF6B6B] to-[#FFB800] rounded-l-3xl" />
-                    <div className="pl-4">
-                        <div className="flex items-center gap-3 mb-8">
-                            <Image src="/images/Perfil Rody linkedin.jpg" alt="Rody Figueroa" width={40} height={40} className="w-10 h-10 rounded-full object-cover" />
-                            <div>
-                                <h4 className="text-white font-semibold">Rody Figueroa</h4>
-                                <p className="text-white/50 text-xs">Oprichter · Born at Da Vinci College · Now for the world 🌎</p>
-                            </div>
-                        </div>
-                        <div className="space-y-5 text-slate-300 leading-relaxed">
-                            <p>Hoewel mijn moedertaal Spaans is, ben ik gepassioneerd door talen. Aan de universiteit leerde ik Engels en Frans. Nadat ik naar Nederland verhuisde, leerde ik Nederlands volledig op eigen kracht — vandaar mijn motto: <span className="text-[#FF6B6B] font-bold italic">"aprende aprendiendo"</span>.</p>
-                            <p>Na mijn studie begon ik Engels als vreemde taal te onderwijzen en deed een postdoctorale opleiding in Spaans als vreemde taal. Zo realiseerde ik me dat een taal leren geen gemakkelijke taak is zonder een methode die alle benodigde vaardigheden ontwikkelt.</p>
-                            <p>In 2022 begon ik als Spaans- en Engelsleraar op een middelbare school in Nederland (Da Vinci College). Terwijl ik geschikt materiaal probeerde te ontwikkelen voor het niveau van mijn leerlingen, ontstond het idee van Linguaenlinea.</p>
-                            <p className="text-white font-medium">Ik heb mijn beroep als leraar achter me gelaten om me volledig te wijden aan de ontwikkeling van dit platform — omdat ik geloof dat elke leerling, waar ook ter wereld, toegang verdient tot kwalitatief hoogwaardig Spaans onderwijs.</p>
+        <div className="min-h-screen bg-[#0D0D0D] text-slate-100 antialiased overflow-x-hidden relative">
+            <DotPattern />
+            <div className="relative z-10">
+                {/* NAV */}
+                <nav className="sticky top-0 z-50 w-full border-b border-white/10 bg-[#0D0D0D]/80 backdrop-blur-md">
+                    <div className="max-w-7xl mx-auto px-6 h-16 flex items-center gap-4">
+                        <button onClick={() => router.push('/')} className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors text-sm font-bold">
+                            <ArrowLeft className="w-4 h-4" /> Terug
+                        </button>
+                        <div className="flex items-center gap-3">
+                            <Image
+                                src="/images/logo-dark-final.png"
+                                alt="Linguaenlinea"
+                                width={140}
+                                height={35}
+                                className="h-7 w-auto object-contain"
+                            />
                         </div>
                     </div>
-                </motion.div>
-            </section>
+                </nav>
 
-            {/* 5 — DONATIE */}
-            <section className="py-20 px-6 max-w-4xl mx-auto text-center">
-                <motion.div initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} className="bg-white/5 border border-white/10 p-12 rounded-[3rem] relative overflow-hidden">
-                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#FF6B6B] to-transparent" />
-                    <Heart className="w-12 h-12 text-[#FF6B6B] mx-auto mb-6" />
-                    <h2 className="text-3xl font-bold text-white mb-4">Buy me a coffee</h2>
-                    <p className="text-white/70 mb-8 max-w-xl mx-auto leading-relaxed">
-                        I create all content for free and dedicate most of my free time to this project.
-                        If you appreciate it, a small donation is always more than welcome!
-                    </p>
-                    <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                        <a href={PAYPAL_DONATE_URL} target="_blank" rel="noopener noreferrer"
-                            className="bg-[#0070BA] hover:bg-[#005ea6] text-white px-8 py-4 rounded-2xl font-bold transition-all flex items-center gap-3 group">
-                            Donate via PayPal
-                        </a>
+                {/* 1 — PARTICLE HERO */}
+                <section className="relative flex flex-col items-center pt-14 pb-2 px-6 overflow-hidden">
+                    <div className="absolute inset-0 pointer-events-none">
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] bg-[#FF6B6B]/5 rounded-full blur-3xl" />
                     </div>
-                    <p className="mt-8 text-white/40 text-sm flex items-center justify-center gap-2">
-                        <Users className="w-4 h-4" />
-                        For teachers, parents and everyone who supports this project.
-                    </p>
-                    <p className="mt-2 text-white/30 text-xs italic">
-                        Every contribution helps keep this platform free for all students.
-                    </p>
-                </motion.div>
-            </section>
+                    <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
+                        className="relative z-10 inline-flex items-center px-4 py-1.5 rounded-full border border-[#FF6B6B]/50 bg-[#FF6B6B]/10 text-[#FF6B6B] text-xs font-bold tracking-wide uppercase mb-4">
+                        <Star className="w-3 h-3 mr-2" /> Over Ons
+                    </motion.div>
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1, delay: 0.2 }} className="relative z-10 w-full flex justify-center">
+                        <ParticleHero />
+                    </motion.div>
+                    <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.7, delay: 0.9 }}
+                        className="relative z-10 text-slate-500 text-sm text-center mt-1 mb-2">
+                        Een leraar met een missie. Een platform gebouwd met liefde voor talen.
+                    </motion.p>
+                </section>
 
-            {/* FOOTER */}
-            <footer className="py-10 px-6 border-t border-white/5 text-center">
-                <div className="flex items-center justify-center gap-2 mb-2">
-                    <span className="text-xl">🌎</span>
-                    <span className="text-[#FF6B6B] font-extrabold text-lg tracking-tight">linguaenlinea.eu</span>
-                </div>
-                <span className="text-[10px] uppercase tracking-widest text-slate-600 font-bold">aprende aprendiendo</span>
-            </footer>
+
+                {/* 3 — MISSIE */}
+                <section className="py-20 px-6 max-w-6xl mx-auto">
+                    <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="text-center mb-12">
+                        <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-3">Mijn missie</h2>
+                        <p className="text-slate-400 max-w-2xl mx-auto">Spaans leren hoeft niet duur of moeilijk te zijn — als de materialen goed gestructureerd en op een leuke manier worden gepresenteerd.</p>
+                    </motion.div>
+                    <div className="grid md:grid-cols-3 gap-6">
+                        {pillars.map((pillar, i) => (
+                            <motion.div key={pillar.title} initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.15 }}
+                                className={`p-8 rounded-3xl ${pillar.bg} border ${pillar.border} hover:scale-105 transition-transform`}>
+                                <div className={`w-12 h-12 rounded-2xl ${pillar.bg} border ${pillar.border} flex items-center justify-center mb-5`}>
+                                    <pillar.icon className={`w-6 h-6 ${pillar.color}`} />
+                                </div>
+                                <h3 className={`text-xl font-bold mb-3 ${pillar.color}`}>{pillar.title}</h3>
+                                <p className="text-slate-300 text-sm leading-relaxed">{pillar.nl}</p>
+                            </motion.div>
+                        ))}
+                    </div>
+                </section>
+
+                {/* 4 — VERHAAL */}
+                <section className="py-8 px-6 max-w-4xl mx-auto">
+                    <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
+                        className="bg-[#1a1a2e] border border-white/10 rounded-3xl p-10 md:p-14 shadow-2xl relative overflow-hidden">
+                        <div className="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-[#FF6B6B] to-[#FFB800] rounded-l-3xl" />
+                        <div className="pl-4">
+                            <div className="flex items-center gap-3 mb-8">
+                                <Image src="/images/Perfil Rody linkedin.jpg" alt="Rody Figueroa" width={40} height={40} className="w-10 h-10 rounded-full object-cover" />
+                                <div>
+                                    <h4 className="text-white font-semibold">Rody Figueroa</h4>
+                                    <p className="text-white/50 text-xs">Oprichter · Born at Da Vinci College · Now for the world 🌎</p>
+                                </div>
+                            </div>
+                            <div className="space-y-5 text-slate-300 leading-relaxed">
+                                <p>Hoewel mijn moedertaal Spaans is, ben ik gepassioneerd door talen. Aan de universiteit leerde ik Engels en Frans. Nadat ik naar Nederland verhuisde, leerde ik Nederlands volledig op eigen kracht — vandaar mijn motto: <span className="text-[#FF6B6B] font-bold italic">"aprende aprendiendo"</span>.</p>
+                                <p>Na mijn studie begon ik Engels als vreemde taal te onderwijzen en deed een postdoctorale opleiding in Spaans als vreemde taal. Zo realiseerde ik me dat een taal leren geen gemakkelijke taak is zonder een methode die alle benodigde vaardigheden ontwikkelt.</p>
+                                <p>In 2022 begon ik als Spaans- en Engelsleraar op een middelbare school in Nederland (Da Vinci College). Terwijl ik geschikt materiaal probeerde te ontwikkelen voor het niveau van mijn leerlingen, ontstond het idee van Linguaenlinea.</p>
+                                <p className="text-white font-medium">Ik heb mijn beroep als leraar achter me gelaten om me volledig te wijden aan de ontwikkeling van dit platform — omdat ik geloof dat elke leerling, waar ook ter wereld, toegang verdient tot kwalitatief hoogwaardig Spaans onderwijs.</p>
+                            </div>
+                        </div>
+                    </motion.div>
+                </section>
+
+                {/* 5 — DONATIE */}
+                <section className="py-20 px-6 max-w-4xl mx-auto text-center">
+                    <motion.div initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} className="bg-white/5 border border-white/10 p-12 rounded-[3rem] relative overflow-hidden">
+                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#FF6B6B] to-[#FFB800]" />
+                        <Heart className="w-12 h-12 text-[#FF6B6B] mx-auto mb-6" />
+                        <h2 className="text-3xl font-bold text-white mb-4">Buy me a coffee</h2>
+                        <p className="text-white/70 mb-8 max-w-xl mx-auto leading-relaxed">
+                            I create all content for free and dedicate most of my free time to this project.
+                            If you appreciate it, a small donation is always more than welcome!
+                        </p>
+                        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                            <a href={PAYPAL_DONATE_URL} target="_blank" rel="noopener noreferrer"
+                                className="bg-[#0070BA] hover:bg-[#005ea6] text-white px-8 py-4 rounded-2xl font-bold transition-all flex items-center gap-3 group">
+                                Donate via PayPal
+                            </a>
+                        </div>
+                        <p className="mt-8 text-white/40 text-sm flex items-center justify-center gap-2">
+                            <Users className="w-4 h-4" />
+                            For teachers, parents and everyone who supports this project.
+                        </p>
+                        <p className="mt-2 text-white/30 text-xs italic">
+                            Every contribution helps keep this platform free for all students.
+                        </p>
+                    </motion.div>
+                </section>
+
+                {/* FOOTER */}
+                <footer className="py-10 px-6 border-t border-white/5 bg-background-dark">
+                    <div className="max-w-6xl mx-auto flex flex-col items-center gap-6">
+                        <div className="flex flex-col items-center">
+                            <div className="flex items-center gap-3 mb-6">
+                                <Image
+                                    src="/images/logo-dark-final.png"
+                                    alt="Linguaenlinea"
+                                    width={140}
+                                    height={35}
+                                    className="h-7 w-auto object-contain"
+                                />
+                            </div>
+                            <span className="text-[10px] uppercase tracking-widest text-slate-500 font-bold">aprende aprendiendo</span>
+                        </div>
+                        <div className="flex flex-wrap justify-center gap-8 text-slate-400 font-bold text-sm font-display">
+                            <a className="hover:text-primary transition-colors" href="/over-ons">Over ons</a>
+                            <a className="hover:text-primary transition-colors" href="/contact">Contact</a>
+                            <a className="hover:text-primary transition-colors" href="/privacy">Privacy</a>
+                            <a className="hover:text-primary transition-colors" href="/faq">FAQ</a>
+                            <a className="hover:text-primary transition-colors" href="https://www.facebook.com/linguaenlinea" target="_blank">Facebook</a>
+                        </div>
+                        <div className="text-slate-600 text-xs font-medium font-display">
+                            © 2026 Linguaenlinea. Alle rechten voorbehouden.
+                        </div>
+                    </div>
+                </footer>
+            </div>
         </div>
-    )
+    );
 }

@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
 import { TextShimmer } from '@/components/ui/text-shimmer';
 
 interface GeneratingCourseProps {
@@ -48,12 +49,15 @@ export default function GeneratingCourse({
             <motion.div
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="flex items-center gap-2 mb-16"
+                className="mb-16"
             >
-                <span className="text-3xl">🌎</span>
-                <span className="text-[#FF6B6B] font-extrabold text-2xl">
-                    linguaenlinea
-                </span>
+                <Image
+                    src="/images/logo-dark-final.png"
+                    alt="Linguaenlinea"
+                    width={180}
+                    height={45}
+                    className="h-10 w-auto object-contain"
+                />
             </motion.div>
 
             {/* Greeting */}
@@ -89,8 +93,8 @@ export default function GeneratingCourse({
                             >
                                 <span className="text-lg">{step.icon}</span>
                                 <span className={`text-sm font-medium ${index === currentStep
-                                        ? 'text-white'
-                                        : 'text-slate-500'
+                                    ? 'text-white'
+                                    : 'text-slate-500'
                                     }`}>
                                     {step.text}
                                 </span>

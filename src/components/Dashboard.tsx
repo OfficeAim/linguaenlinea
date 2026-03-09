@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
 import {
     BookOpen,
@@ -177,15 +178,19 @@ export default function Dashboard() {
 
             {/* 1. LEFT SIDEBAR */}
             <aside className="w-[240px] flex-shrink-0 border-r border-slate-800/50 bg-background-dark flex flex-col p-6">
-                <div className="flex items-center gap-2 mb-1">
-                    <span className="text-2xl">🌎</span>
-                    <h1 className="text-primary text-xl font-extrabold tracking-tight">linguaenlinea</h1>
+                <div className="mb-4">
+                    <Image
+                        src="/images/logo-dark-final.png"
+                        alt="Linguaenlinea"
+                        width={140}
+                        height={35}
+                        className="h-7 w-auto object-contain"
+                    />
+                    <p className="text-slate-500 text-[10px] font-bold mt-2 uppercase tracking-[0.2em]">aprende aprendiendo</p>
                 </div>
-                <p className="text-slate-500 text-xs font-medium mb-10 uppercase tracking-widest">aprende aprendiendo</p>
 
                 <div className="flex flex-col gap-1 flex-grow overflow-y-auto custom-scrollbar">
                     <p className="text-[10px] font-bold text-slate-500 tracking-[0.2em] mb-4 uppercase">curriculum</p>
-
                     {groupedUnits.map((unit) => {
                         const isActive = unit.unitNumber === activeUnitNumber;
                         return (

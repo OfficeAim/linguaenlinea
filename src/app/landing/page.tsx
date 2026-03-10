@@ -74,7 +74,7 @@ export default function LandingPage() {
             {/* NAVIGATION */}
             <nav className="sticky top-0 z-50 w-full border-b border-white/10 bg-background-dark/80 backdrop-blur-md">
                 <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-                    <div className="flex flex-col">
+                    <div className="flex flex-col mt-4">
                         <div className="flex items-center gap-3">
                             <Image
                                 src="/images/logo-linguaenlinea-final.png"
@@ -84,7 +84,7 @@ export default function LandingPage() {
                                 className="h-24 w-auto object-contain"
                             />
                         </div>
-                        <span className="text-[10px] uppercase tracking-widest text-slate-500 font-bold ml-8">aprende aprendiendo</span>
+                        <span className="text-[10px] uppercase tracking-widest text-[#D4AF37] font-medium text-center">aprende aprendiendo</span>
                     </div>
                     <div className="flex items-center gap-4">
                         <button className="hidden md:block px-6 py-2 text-sm font-bold text-slate-300 hover:text-white transition-colors">Inloggen</button>
@@ -494,7 +494,7 @@ export default function LandingPage() {
                                 className="h-20 w-auto object-contain"
                             />
                         </div>
-                        <span className="text-[10px] uppercase tracking-widest text-slate-500 font-bold">aprende aprendiendo</span>
+                        <span className="text-[10px] uppercase tracking-widest text-[#D4AF37] font-medium">aprende aprendiendo</span>
                     </div>
                     <div className="flex flex-wrap justify-center gap-8 text-slate-400 font-bold text-sm font-display">
                         <a className="hover:text-primary transition-colors" href="/over-ons">Over ons</a>

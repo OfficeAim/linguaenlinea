@@ -19,11 +19,11 @@ const jakarta = Plus_Jakarta_Sans({
 
 export const metadata: Metadata = {
   title: "Linguaenlinea — Aprende Aprendiendo",
-  description: "adaptive Spanish learning platform for students.",
+  description: "Adaptive Spanish learning platform for students.",
   icons: {
-    icon: "/images/logo-linguaenlinea-final.png",
-    shortcut: "/images/logo-linguaenlinea-final.png",
-    apple: "/images/logo-linguaenlinea-final.png",
+    icon: "/images/favicon.png",
+    shortcut: "/images/favicon.png",
+    apple: "/images/favicon.png",
   },
 };
 

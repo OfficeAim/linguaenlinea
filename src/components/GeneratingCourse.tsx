@@ -56,7 +56,7 @@ export default function GeneratingCourse({
                     alt="Linguaenlinea"
                     width={200}
                     height={50}
-                    className="h-10 w-auto object-contain"
+                    className="h-16 w-auto object-contain"
                 />
             </motion.div>
 

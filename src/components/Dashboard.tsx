@@ -186,7 +186,7 @@ export default function Dashboard() {
                         alt="Linguaenlinea"
                         width={200}
                         height={50}
-                        className="h-10 w-auto object-contain"
+                        className="h-16 w-auto object-contain"
                     />
                     <p className="text-slate-500 text-[10px] font-bold mt-2 uppercase tracking-[0.2em]">aprende aprendiendo</p>
                 </div>

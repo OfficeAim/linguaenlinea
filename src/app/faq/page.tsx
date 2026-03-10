@@ -169,7 +169,7 @@ export default function FAQPage() {
                                     alt="Linguaenlinea"
                                     width={200}
                                     height={50}
-                                    className="h-14 w-auto object-contain"
+                                    className="h-24 w-auto object-contain"
                                 />
                             </div>
                         </div>
@@ -214,7 +214,7 @@ export default function FAQPage() {
                                     alt="Linguaenlinea"
                                     width={180}
                                     height={45}
-                                    className="h-12 w-auto object-contain opacity-80"
+                                    className="h-20 w-auto object-contain"
                                 />
                             </div>
                             <span className="text-[10px] uppercase tracking-widest text-slate-500 font-bold">aprende aprendiendo</span>

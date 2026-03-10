@@ -271,7 +271,7 @@ export default function AchievementCard({
                                 alt="Linguaenlinea"
                                 width={120}
                                 height={30}
-                                className="h-12 w-auto object-contain"
+                                className="h-8 w-auto object-contain"
                             />
                             <span className="text-slate-500 font-bold tracking-tight">.eu</span>
                         </div>

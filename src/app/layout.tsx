@@ -21,9 +21,9 @@ export const metadata: Metadata = {
   title: "Linguaenlinea — Aprende Aprendiendo",
   description: "Adaptive Spanish learning platform for students.",
   icons: {
-    icon: "/images/favicon.png",
-    shortcut: "/images/favicon.png",
-    apple: "/images/favicon.png",
+    icon: "/images/logo-linguaenlinea-final.png",
+    shortcut: "/images/logo-linguaenlinea-final.png",
+    apple: "/images/logo-linguaenlinea-final.png",
   },
 };
 

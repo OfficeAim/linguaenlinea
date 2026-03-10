@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
@@ -49,6 +50,7 @@ const ICON_MAP: Record<string, any> = {
 };
 
 export default function Dashboard() {
+    const router = useRouter();
     const [lessons, setLessons] = useState<EnrichedLesson[]>([]);
     const [loading, setLoading] = useState(true);
     const [mounted, setMounted] = useState(false);
@@ -347,7 +349,30 @@ export default function Dashboard() {
             </main>
 
             {/* 3. RIGHT PANEL */}
-            <aside className="w-[320px] flex-shrink-0 border-l border-slate-800/50 bg-background-dark p-8 flex flex-col hidden xl:flex">
+            <aside className="w-[320px] flex-shrink-0 border-l border-slate-800/50 bg-background-dark p-8 flex flex-col hidden xl:flex overflow-y-auto custom-scrollbar">
+
+                {/* 1. CIRCULAR PROGRESS WIDGET */}
+                <div className="flex flex-col items-center mb-6">
+                    <div className="relative w-24 h-24">
+                        <svg className="w-24 h-24 -rotate-90" viewBox="0 0 36 36">
+                            <circle cx="18" cy="18" r="15.9" fill="none"
+                                stroke="#ffffff10" strokeWidth="3" />
+                            <circle cx="18" cy="18" r="15.9" fill="none"
+                                stroke="#FF6B6B" strokeWidth="3"
+                                strokeDasharray={`${activeUnit?.progress || 0} 100`}
+                                strokeLinecap="round" />
+                        </svg>
+                        <div className="absolute inset-0 flex flex-col items-center 
+      justify-center">
+                            <span className="text-white font-black text-lg">
+                                {activeUnit?.progress || 0}%
+                            </span>
+                            <span className="text-slate-400 text-[10px]">Unit {activeUnit?.unitNumber || 1}</span>
+                        </div>
+                    </div>
+                    <span className="text-slate-400 text-xs mt-2 font-bold uppercase tracking-wider">Unit voortgang</span>
+                </div>
+
                 <div className="flex flex-col items-center text-center mb-10">
                     <div className="relative mb-4 group">
                         <div className="w-24 h-24 rounded-full bg-card-dark flex items-center justify-center border-2 border-slate-700 shadow-xl overflow-hidden transition-transform group-hover:scale-105">
@@ -406,14 +431,76 @@ export default function Dashboard() {
                     </div>
                 </div>
 
+                {/* 2. WEEKLY STREAK WIDGET */}
+                {(() => {
+                    const now = new Date();
+                    // getDay() is 0 (Sun) to 6 (Sat)
+                    // We want 0=Ma, 1=Di, 2=Wo, 3=Do, 4=Vr, 5=Za, 6=Zo
+                    const currentDayOfWeek = (now.getDay() + 6) % 7;
+
+                    return (
+                        <div className="bg-white/5 rounded-2xl p-4 mt-0 mb-4 border border-white/5">
+                            <p className="text-slate-400 text-xs font-bold uppercase 
+    tracking-wider mb-3">Deze week</p>
+                            <div className="flex justify-between">
+                                {['Ma', 'Di', 'Wo', 'Do', 'Vr', 'Za', 'Zo'].map((day, i) => (
+                                    <div key={day} className="flex flex-col items-center gap-1">
+                                        <div className={`w-8 h-8 rounded-full flex items-center 
+          justify-center text-xs font-bold transition-all duration-300
+          ${i < currentDayOfWeek
+                                                ? 'bg-[#FF6B6B] text-white shadow-[0_0_10px_rgba(255,107,107,0.3)]'
+                                                : i === currentDayOfWeek
+                                                    ? 'bg-white/20 text-white border border-white/30 animate-pulse'
+                                                    : 'bg-white/10 text-slate-500'}`}>
+                                            {i < currentDayOfWeek ? '✓' : day[0]}
+                                        </div>
+                                        <span className="text-[10px] text-slate-500">{day}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    );
+                })()}
+
+                {/* 3. LAST BADGE WIDGET */}
+                <div className="bg-gradient-to-br from-[#FFB800]/20 to-[#FF6B6B]/20 
+  border border-[#FFB800]/30 rounded-2xl p-4 mb-8">
+                    <p className="text-slate-400 text-xs font-bold uppercase 
+    tracking-wider mb-3">Laatste badge</p>
+                    <div className="flex items-center gap-3">
+                        <div className="text-4xl animate-bounce">🏆</div>
+                        <div>
+                            <p className="text-white font-bold text-sm">Eerste stap!</p>
+                            <p className="text-slate-400 text-[10px] leading-tight mt-1">
+                                Voltooi les 1 om je badge te verdienen
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
                 <div className="mt-auto">
                     {nextLesson ? (
-                        <Link
-                            href={`/lesson/${nextLesson.id}`}
-                            className="w-full bg-primary hover:bg-primary/90 text-white font-extrabold py-4 rounded-xl shadow-lg shadow-primary/20 flex items-center justify-center gap-2 transition-transform active:scale-95"
-                        >
-                            Verder {nextLesson.order_index} <ChevronRight className="w-5 h-5" />
-                        </Link>
+                        /* 4. NEXT LESSON CTA WIDGET */
+                        <div className="bg-gradient-to-br from-[#FF6B6B] to-[#ff5252] 
+  rounded-2xl p-4 mt-4 cursor-pointer hover:scale-[1.02] 
+  transition-transform shadow-lg shadow-[#FF6B6B]/30"
+                            onClick={() => router.push(`/lesson/${nextLesson.id}`)}>
+                            <p className="text-white/70 text-[10px] font-bold uppercase 
+    tracking-wider mb-1">Volgende les</p>
+                            <p className="text-white font-black text-base mb-3">
+                                {nextLesson?.title || 'Me llamo...'}
+                            </p>
+                            <div className="flex items-center justify-between">
+                                <span className="text-white/80 text-xs">
+                                    Les {nextLesson.order_index} · Unit {Math.ceil(nextLesson.order_index / 4)}
+                                </span>
+                                <div className="bg-white/20 rounded-full px-3 py-1">
+                                    <span className="text-white text-xs font-bold">
+                                        Start ▶
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
                     ) : (
                         <button className="w-full bg-slate-800 text-slate-500 font-extrabold py-4 rounded-xl cursor-not-allowed">
                             Alles voltooid!

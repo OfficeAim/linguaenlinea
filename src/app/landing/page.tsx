@@ -74,16 +74,14 @@ export default function LandingPage() {
             {/* NAVIGATION */}
             <nav className="sticky top-0 z-50 w-full border-b border-white/10 bg-background-dark/80 backdrop-blur-md">
                 <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-                    <div className="flex flex-col mt-4">
-                        <div className="flex items-center gap-3">
-                            <Image
-                                src="/images/logo-linguaenlinea-final.png"
-                                alt="Linguaenlinea"
-                                width={200}
-                                height={67}
-                                className="h-24 w-auto object-contain"
-                            />
-                        </div>
+                    <div className="flex flex-col items-center gap-2 mt-4 ml-10">
+                        <Image
+                            src="/images/logo-linguaenlinea-final.png"
+                            alt="Linguaenlinea"
+                            width={200}
+                            height={67}
+                            className="h-24 w-auto object-contain"
+                        />
                         <span className="text-[10px] uppercase tracking-widest text-[#D4AF37] font-medium text-center">aprende aprendiendo</span>
                     </div>
                     <div className="flex items-center gap-4">
@@ -484,17 +482,15 @@ export default function LandingPage() {
             {/* FOOTER */}
             <footer className="py-10 px-6 border-t border-white/5 bg-background-dark">
                 <div className="max-w-6xl mx-auto flex flex-col items-center gap-6">
-                    <div className="flex flex-col items-center">
-                        <div className="flex items-center gap-3 mb-6">
-                            <Image
-                                src="/images/logo-linguaenlinea-final.png"
-                                alt="Linguaenlinea"
-                                width={180}
-                                height={60}
-                                className="h-20 w-auto object-contain"
-                            />
-                        </div>
-                        <span className="text-[10px] uppercase tracking-widest text-[#D4AF37] font-medium">aprende aprendiendo</span>
+                    <div className="flex flex-col items-center gap-2">
+                        <Image
+                            src="/images/logo-linguaenlinea-final.png"
+                            alt="Linguaenlinea"
+                            width={180}
+                            height={60}
+                            className="h-20 w-auto object-contain"
+                        />
+                        <span className="text-[10px] uppercase tracking-widest text-[#D4AF37] font-medium text-center">aprende aprendiendo</span>
                     </div>
                     <div className="flex flex-wrap justify-center gap-8 text-slate-400 font-bold text-sm font-display">
                         <a className="hover:text-primary transition-colors" href="/over-ons">Over ons</a>

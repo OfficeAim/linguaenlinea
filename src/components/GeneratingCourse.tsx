@@ -52,10 +52,10 @@ export default function GeneratingCourse({
                 className="mb-16"
             >
                 <Image
-                    src="/images/logo-dark-final.png"
+                    src="/images/logo-linguaenlinea-final.png"
                     alt="Linguaenlinea"
-                    width={180}
-                    height={45}
+                    width={200}
+                    height={50}
                     className="h-10 w-auto object-contain"
                 />
             </motion.div>

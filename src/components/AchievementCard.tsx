@@ -267,11 +267,11 @@ export default function AchievementCard({
                     <span style={brandStyle}>
                         <div className="flex items-center gap-2">
                             <Image
-                                src="/images/logo-dark-final.png"
+                                src="/images/logo-linguaenlinea-final.png"
                                 alt="Linguaenlinea"
-                                width={100}
-                                height={24}
-                                className="h-4 w-auto object-contain"
+                                width={120}
+                                height={30}
+                                className="h-8 w-auto object-contain"
                             />
                             <span className="text-slate-500 font-bold tracking-tight">.eu</span>
                         </div>

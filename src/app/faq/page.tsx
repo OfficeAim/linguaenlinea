@@ -165,11 +165,11 @@ export default function FAQPage() {
                             </button>
                             <div className="flex items-center gap-3">
                                 <Image
-                                    src="/images/logo-dark-final.png"
+                                    src="/images/logo-linguaenlinea-final.png"
                                     alt="Linguaenlinea"
-                                    width={140}
-                                    height={35}
-                                    className="h-7 w-auto object-contain"
+                                    width={200}
+                                    height={50}
+                                    className="h-14 w-auto object-contain"
                                 />
                             </div>
                         </div>
@@ -210,11 +210,11 @@ export default function FAQPage() {
                         <div className="flex flex-col items-center">
                             <div className="flex items-center gap-3 mb-6">
                                 <Image
-                                    src="/images/logo-dark-final.png"
+                                    src="/images/logo-linguaenlinea-final.png"
                                     alt="Linguaenlinea"
-                                    width={140}
-                                    height={35}
-                                    className="h-7 w-auto object-contain"
+                                    width={180}
+                                    height={45}
+                                    className="h-12 w-auto object-contain opacity-80"
                                 />
                             </div>
                             <span className="text-[10px] uppercase tracking-widest text-slate-500 font-bold">aprende aprendiendo</span>

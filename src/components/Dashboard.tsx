@@ -182,11 +182,11 @@ export default function Dashboard() {
             <aside className="w-[240px] flex-shrink-0 border-r border-slate-800/50 bg-background-dark flex flex-col p-6">
                 <div className="mb-4">
                     <Image
-                        src="/images/logo-dark-final.png"
+                        src="/images/logo-linguaenlinea-final.png"
                         alt="Linguaenlinea"
-                        width={140}
-                        height={35}
-                        className="h-7 w-auto object-contain"
+                        width={200}
+                        height={50}
+                        className="h-10 w-auto object-contain"
                     />
                     <p className="text-slate-500 text-[10px] font-bold mt-2 uppercase tracking-[0.2em]">aprende aprendiendo</p>
                 </div>

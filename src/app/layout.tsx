@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
+import { CookieBanner } from "@/components/ui/cookie-banner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -21,9 +22,9 @@ export const metadata: Metadata = {
   title: "Linguaenlinea — Aprende Aprendiendo",
   description: "Adaptive Spanish learning platform for students.",
   icons: {
-    icon: "/images/logo-linguaenlinea-final.png",
-    shortcut: "/images/logo-linguaenlinea-final.png",
-    apple: "/images/logo-linguaenlinea-final.png",
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/images/favicon.png",
   },
 };
 
@@ -42,6 +43,7 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         {children}
+        <CookieBanner />
       </body>
     </html>
   );

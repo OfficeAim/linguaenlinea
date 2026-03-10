@@ -21,6 +21,7 @@ import {
     Layout,
     ChevronRight
 } from 'lucide-react';
+import StudyLamp from './ui/StudyLamp';
 
 interface EnrichedLesson {
     id: string;
@@ -372,6 +373,9 @@ export default function Dashboard() {
                     </div>
                     <span className="text-slate-400 text-xs mt-2 font-bold uppercase tracking-wider">Unit voortgang</span>
                 </div>
+
+                {/* STUDY ASSISTANT (JORGE LAMP) */}
+                <StudyLamp />
 
                 <div className="flex flex-col items-center text-center mb-10">
                     <div className="relative mb-4 group">

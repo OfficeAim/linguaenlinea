@@ -10,12 +10,15 @@ interface GeneratingCourseProps {
 }
 
 const STEPS = [
-    { icon: '🧠', text: 'Analizando je profiel...' },
+    { icon: '🧠', text: 'Analyseren van je profiel...' },
     { icon: '🎯', text: 'Bepalen van je startniveau...' },
     { icon: '🇨🇺', text: 'Cubaanse audio klaarzetten...' },
     { icon: '📚', text: 'SLO Kerndoelen koppelen...' },
     { icon: '⚡', text: 'XP systeem activeren...' },
-    { icon: '🏆', text: 'Achievements unlocking...' },
+    { icon: '🏆', text: 'Prestaties ontgrendelen...' },
+    { icon: '📚', text: 'Jouw woordenschat voorbereiden... 📚' },
+    { icon: '🗺️', text: 'Leerpad op maat instellen... 🗺️' },
+    { icon: '✅', text: 'Laatste controle uitvoeren... ✅' }
 ];
 
 export default function GeneratingCourse({
@@ -26,19 +29,23 @@ export default function GeneratingCourse({
     const [done, setDone] = useState(false);
 
     useEffect(() => {
+        // Step interval set to 6.5 seconds (6500ms)
+        const stepTime = 6500;
+        
         const interval = setInterval(() => {
             setCurrentStep(prev => {
                 if (prev >= STEPS.length - 1) {
                     clearInterval(interval);
                     setTimeout(() => {
                         setDone(true);
-                        setTimeout(onComplete, 1200);
-                    }, 600);
+                        // Final pause of 4 seconds (4000ms) before completion
+                        setTimeout(onComplete, 4000);
+                    }, 1000);
                     return prev;
                 }
                 return prev + 1;
             });
-        }, 1200);
+        }, stepTime);
         return () => clearInterval(interval);
     }, [onComplete]);
 

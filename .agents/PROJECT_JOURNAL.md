@@ -167,3 +167,5 @@
 - **Log 2026-03-12 (13:10)**: [MICRO] Replaced 3D PNG icons in the "Zo ziet een les eruit" section with Lucide React icons (`BookOpen`, `Headphones`, `Users`) colored in the brand's red (`#e63946`) for a cleaner, unified look.
 
 - **Log 2026-03-12 (13:15)**: [MICRO] Replaced all 3D PNG icons across the site (FAQ and "Over Ons" pages) with Lucide React icons (`Heart`, `GraduationCap`, `School`, `Coffee`) using the brand's red (`#e63946`) for consistency and a premium feel.
+
+- **Log 2026-03-12 (13:25)**: [MICRO] Fixed Next.js hydration mismatch errors across multiple components (`Dashboard`, `LessonView`, `Onboarding`, `FAQPage`, `DotPattern`). Implemented the "mounted" state pattern to protect window-access, and moved `new Date()` logic into `useEffect` hooks.

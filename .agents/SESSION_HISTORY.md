@@ -17,6 +17,7 @@
   * feat: Migrated to @supabase/ssr for robust cookie-based authentication
   * deploy: Final production deployment with fixed auth architecture
   * fix: Refined landing page icon backgrounds for better integration
+  * fix: Resolved Next.js hydration mismatch errors (`window`, `Date`, `Math`)
   * style: Replaced all PNG icons across the site with Lucide React icons
 
 ## Session: 2026-03-12 (Part 2)

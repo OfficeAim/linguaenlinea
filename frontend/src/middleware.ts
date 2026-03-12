@@ -61,6 +61,8 @@ export async function middleware(request: NextRequest) {
   const isDashboardPage = request.nextUrl.pathname.startsWith('/dashboard')
   const isLessonPage = request.nextUrl.pathname.startsWith('/lesson')
 
+  console.log(`Middleware Path: ${request.nextUrl.pathname} | User: ${user?.email || 'Guest'}`);
+
   // Redirect to login if accessing protected route without session
   if ((isDashboardPage || isLessonPage) && !user) {
     const url = request.nextUrl.clone()

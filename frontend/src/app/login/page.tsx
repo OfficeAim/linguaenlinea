@@ -63,16 +63,26 @@ export default function LoginPage() {
 
     // Success! Check if profile exists
     if (data.user) {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', data.user.id)
-        .single();
+      console.log("Login success for:", data.user.email);
+      try {
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', data.user.id)
+          .single();
 
-      if (profile && profile.onboarding_results) {
-        window.location.href = '/dashboard';
-      } else {
-        window.location.href = '/onboarding';
+        console.log("Profile check result:", { profile, profileError });
+
+        if (profile && profile.onboarding_results) {
+          console.log("Redirecting to /dashboard");
+          window.location.href = '/dashboard';
+        } else {
+          console.log("Redirecting to /onboarding");
+          window.location.href = '/onboarding';
+        }
+      } catch (err) {
+        console.error("Error in profile fetch or redirect:", err);
+        setLoading(false);
       }
     }
   };

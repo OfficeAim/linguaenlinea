@@ -15,6 +15,15 @@
 - [x] Login page (/login) con Supabase Auth
 - [x] Logout button en student dashboard
 - [x] Parental Consent logic for minors (<16)
+- [ ] [PRIORITY: HIGH] Connect linguaenlinea.eu domain in Vercel
+- [ ] [PRIORITY: HIGH] Rename Vercel project from "frontend" to "linguaenlinea"
+- [ ] [PRIORITY: HIGH] Fix RLS policies for `quiz_results` in Supabase
+- [ ] [PRIORITY: MEDIUM] Guided tour for new students on Dashboard
+- [ ] [PRIORITY: MEDIUM] Move "Spaans klinkt anders" (Phonetic Intro) screen before Lesson 1
+- [ ] [PRIORITY: MEDIUM] Implement 3-role architecture (Student, Teacher, Admin)
+- [ ] [PRIORITY: MEDIUM] Admin and Teacher Dashboards
+- [ ] [PRIORITY: LOW] Create contact@linguaenlinea.eu with Zoho Mail
+- [ ] [PRIORITY: HIGH] Physical device responsive audit
 - [ ] ARCHITECTURE: Sistema de 3 roles (student/teacher/admin) en Supabase
 - [ ] Dashboard Admin (/admin):
       - Lista estudiantes + progreso
@@ -168,4 +177,5 @@
 
 - **Log 2026-03-12 (13:15)**: [MICRO] Replaced all 3D PNG icons across the site (FAQ and "Over Ons" pages) with Lucide React icons (`Heart`, `GraduationCap`, `School`, `Coffee`) using the brand's red (`#e63946`) for consistency and a premium feel.
 
-- **Log 2026-03-12 (13:25)**: [MICRO] Fixed Next.js hydration mismatch errors across multiple components (`Dashboard`, `LessonView`, `Onboarding`, `FAQPage`, `DotPattern`). Implemented the "mounted" state pattern to protect window-access, and moved `new Date()` logic into `useEffect` hooks.
+- **Log 2026-03-12 (13:25)**: [MICRO] Fixed Next.js hydration mismatch errors across multiple components (\`Dashboard\`, \`LessonView\`, \`Onboarding\`, \`FAQPage\`, \`DotPattern\`). Implemented the "mounted" state pattern to protect window-access, and moved \`new Date()\` logic into \`useEffect\` hooks.
+- **Log 2026-03-12 (13:30)**: [SESSION CLOSE] Auth fixed, icons migrated to Lucide React, and hydration errors resolved. Final production deployment triggered.

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
@@ -72,6 +72,10 @@ const FAQCategory = ({ title, icon: Icon, items, borderColor, activeColor }: { t
 
 export default function FAQPage() {
     const router = useRouter();
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => setMounted(true), []);
+
+    if (!mounted) return null;
 
     const categories = [
         {

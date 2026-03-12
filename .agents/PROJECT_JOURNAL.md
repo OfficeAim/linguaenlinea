@@ -154,3 +154,16 @@
   1. Replaced `router.push` with `window.location.href` in `login/page.tsx` and `onboarding/page.tsx` to solve infinite loading and CORB blocks.
   2. Fixed `middleware.ts` cookie persistence: now correctly copying session cookies from the initial response to the redirect response objects. This prevents session loss during redirects between `/login` and `/dashboard`.
   3. Verified non-existence of redundant `router.refresh()` calls that could cause loops.
+
+- **Log 2026-03-12 (12:25)**: [ARCHITECTURE] Auth System Overhaul & Production Deployment.
+  1. Migrated Supabase client to `@supabase/ssr` using `createBrowserClient` for better cookie handling.
+  2. Fixed Middleware to propagate session cookies during redirects, resolving infinite loading/redirection loops.
+  3. Replaced Next.js router transitions with `window.location.href` for critical auth gates.
+  4. Successfully pushed all fixes to GitHub (`main`).
+  5. Deployed to Vercel Production. Final URL: https://frontend-ten-sigma-k640vdpn7m.vercel.app
+
+- **Log 2026-03-12 (13:05)**: [MICRO] Refined landing page icons (Zelfstudie, Oefening, Community) with a dark background (#1a1a2e) and rounded corners to match the premium dark theme.
+
+- **Log 2026-03-12 (13:10)**: [MICRO] Replaced 3D PNG icons in the "Zo ziet een les eruit" section with Lucide React icons (`BookOpen`, `Headphones`, `Users`) colored in the brand's red (`#e63946`) for a cleaner, unified look.
+
+- **Log 2026-03-12 (13:15)**: [MICRO] Replaced all 3D PNG icons across the site (FAQ and "Over Ons" pages) with Lucide React icons (`Heart`, `GraduationCap`, `School`, `Coffee`) using the brand's red (`#e63946`) for consistency and a premium feel.

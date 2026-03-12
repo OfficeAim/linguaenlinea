@@ -1,7 +1,14 @@
 "use client"
 import { cn } from "@/lib/utils"
 
+import { useState, useEffect } from "react";
+
 export function DotPattern({ className }: { className?: string }) {
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => setMounted(true), []);
+
+    if (!mounted) return null;
+
     return (
         <div className={cn("absolute inset-0 overflow-hidden", className)}>
             <svg className="absolute inset-0 w-full h-full opacity-20" xmlns="http://www.w3.org/2000/svg">

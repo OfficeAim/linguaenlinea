@@ -63,6 +63,7 @@ export default function Dashboard() {
     const [loading, setLoading] = useState(true);
     const [mounted, setMounted] = useState(false);
     const [xp, setXp] = useState(0);
+    const [currentDayOfWeek, setCurrentDayOfWeek] = useState<number | null>(null);
 
     const [activeUnitNumber, setActiveUnitNumber] = useState(1);
     const [studentName, setStudentName] = useState('Student');
@@ -94,6 +95,10 @@ export default function Dashboard() {
             const studentId = localStorage.getItem('student_id') || "11111111-1111-1111-1111-111111111111";
 
             try {
+                // Setting current day of week on mount
+                const now = new Date();
+                setCurrentDayOfWeek((now.getDay() + 6) % 7);
+
                 // 1. Fetch Dutch track lessons
                 const { data: lessonsData, error: lessonsError } = await supabase
                     .from('lessons')
@@ -505,35 +510,26 @@ export default function Dashboard() {
                 </div>
 
                 {/* 2. WEEKLY STREAK WIDGET */}
-                {(() => {
-                    const now = new Date();
-                    // getDay() is 0 (Sun) to 6 (Sat)
-                    // We want 0=Ma, 1=Di, 2=Wo, 3=Do, 4=Vr, 5=Za, 6=Zo
-                    const currentDayOfWeek = (now.getDay() + 6) % 7;
-
-                    return (
-                        <div className="bg-white/5 rounded-2xl p-4 mt-0 mb-4 border border-white/5">
-                            <p className="text-slate-400 text-xs font-bold uppercase 
-    tracking-wider mb-3">Deze week</p>
-                            <div className="flex justify-between">
-                                {['Ma', 'Di', 'Wo', 'Do', 'Vr', 'Za', 'Zo'].map((day, i) => (
-                                    <div key={day} className="flex flex-col items-center gap-1">
-                                        <div className={`w-8 h-8 rounded-full flex items-center 
-          justify-center text-xs font-bold transition-all duration-300
-          ${i < currentDayOfWeek
-                                                ? 'bg-[#FF6B6B] text-white shadow-[0_0_10px_rgba(255,107,107,0.3)]'
-                                                : i === currentDayOfWeek
-                                                    ? 'bg-white/20 text-white border border-white/30 animate-pulse'
-                                                    : 'bg-white/10 text-slate-500'}`}>
-                                            {i < currentDayOfWeek ? '✓' : day[0]}
-                                        </div>
-                                        <span className="text-[10px] text-slate-500">{day}</span>
-                                    </div>
-                                ))}
+                <div className="bg-white/5 rounded-2xl p-4 mt-0 mb-4 border border-white/5">
+                    <p className="text-slate-400 text-xs font-bold uppercase 
+tracking-wider mb-3">Deze week</p>
+                    <div className="flex justify-between">
+                        {['Ma', 'Di', 'Wo', 'Do', 'Vr', 'Za', 'Zo'].map((day, i) => (
+                            <div key={day} className="flex flex-col items-center gap-1">
+                                <div className={`w-8 h-8 rounded-full flex items-center 
+  justify-center text-xs font-bold transition-all duration-300
+  ${currentDayOfWeek !== null && i < currentDayOfWeek
+                                        ? 'bg-[#FF6B6B] text-white shadow-[0_0_10px_rgba(255,107,107,0.3)]'
+                                        : currentDayOfWeek !== null && i === currentDayOfWeek
+                                            ? 'bg-white/20 text-white border border-white/30 animate-pulse'
+                                            : 'bg-white/10 text-slate-500'}`}>
+                                    {currentDayOfWeek !== null && i < currentDayOfWeek ? '✓' : day[0]}
+                                </div>
+                                <span className="text-[10px] text-slate-500">{day}</span>
                             </div>
-                        </div>
-                    );
-                })()}
+                        ))}
+                    </div>
+                </div>
 
                 {/* 3. LAST BADGE WIDGET */}
                 <div className="bg-gradient-to-br from-[#FFB800]/20 to-[#FF6B6B]/20 

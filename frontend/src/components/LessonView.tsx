@@ -63,6 +63,8 @@ const getStudentId = () => {
 }
 
 export default function LessonView({ id }: { id: string }) {
+    const [mounted, setMounted] = useState(false);
+    const [studentId, setStudentId] = useState<string | null>(null);
     const [lesson, setLesson] = useState<Lesson | null>(null);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState<'understand' | 'explore' | 'practice' | 'communicate'>('understand');
@@ -79,10 +81,18 @@ export default function LessonView({ id }: { id: string }) {
     const [xpTotal, setXpTotal] = useState(0);
     const [showXpToast, setShowXpToast] = useState(false);
 
-    // Load XP on mount
+    // Load XP and Student ID on mount
     useEffect(() => {
+        setMounted(true);
         const xp = localStorage.getItem('xp_total');
         if (xp) setXpTotal(parseInt(xp, 10));
+
+        let sId = localStorage.getItem('student_id');
+        if (!sId) {
+            sId = crypto.randomUUID();
+            localStorage.setItem('student_id', sId);
+        }
+        setStudentId(sId);
     }, []);
 
     const handleShareFacebook = () => {
@@ -143,8 +153,8 @@ export default function LessonView({ id }: { id: string }) {
         if (!id) return;
 
         const checkQuizStatus = async () => {
+            if (!studentId) return;
             try {
-                const studentId = getStudentId();
                 // 1. Get the quiz ID for this lesson
                 const { data: quizData } = await supabase
                     .from('quizzes')
@@ -199,7 +209,7 @@ export default function LessonView({ id }: { id: string }) {
 
     const flatDialogueAnswers = interactiveDialogueLines.flatMap(l => l.blanks || []);
 
-    if (loading) {
+    if (!mounted || loading) {
         return (
             <div className="min-h-screen bg-brand-charcoal text-white flex items-center justify-center">
                 <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-brand-coral"></div>
@@ -237,7 +247,7 @@ export default function LessonView({ id }: { id: string }) {
                     lessonId={lesson.id}
                     lessonOrder={lesson.order_index}
                     lessonTitle={lesson.title}
-                    studentId={getStudentId()}
+                    studentId={studentId || ''}
                     onClose={() => setIsQuizOpen(false)}
                     onShowAchievement={(score: number) => {
                         setIsQuizOpen(false);
@@ -565,7 +575,7 @@ export default function LessonView({ id }: { id: string }) {
                                         score={justPassedScore !== null ? justPassedScore : quizScore}
                                         lessonTitle={lesson?.title || ''}
                                         lessonNumber="1.1"
-                                        achievedDate={achievedDate || new Date().toLocaleDateString('nl-NL')}
+                                        achievedDate={achievedDate || (mounted ? new Date().toLocaleDateString('nl-NL') : '')}
                                         facebookShareUrl={`https://www.facebook.com/sharer/sharer.php?u=https://www.linguaenlinea.eu&quote=${encodeURIComponent(`🏆 Ik heb zojuist Les 1.1 behaald op @Linguaenlinea met ${justPassedScore !== null ? justPassedScore : quizScore}%!\n\nMe llamo [naam], soy de Holanda y aprendo español 🇪🇸\n\nLeer ook gratis Spaans 👉\nhttps://linguaenlinea.eu\n\n#linguaenlinea #learnspanish #español #gratis #nederlandsspaans #a1español`)}`}
                                         onShareFacebook={handleShareFacebook}
                                     />

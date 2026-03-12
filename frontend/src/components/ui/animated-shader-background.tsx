@@ -14,7 +14,7 @@ const AnimatedShaderBackground = () => {
         renderer.setSize(container.offsetWidth, container.offsetHeight);
         container.appendChild(renderer.domElement);
 
-        const isMobile = window.innerWidth < 768;
+        const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
         const iterations = isMobile ? 15 : 35;
 
         const material = new THREE.ShaderMaterial({

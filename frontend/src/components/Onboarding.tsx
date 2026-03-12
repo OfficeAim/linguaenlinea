@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { ChevronRight, Check } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -90,6 +90,11 @@ export default function Onboarding({ onComplete }: { onComplete: () => void }) {
     const [step, setStep] = useState(0);
     const [answers, setAnswers] = useState<Record<string, any>>({ interests: [] });
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const [showAccountCreation, setShowAccountCreation] = useState(false);
     const [email, setEmail] = useState('');
@@ -99,6 +104,8 @@ export default function Onboarding({ onComplete }: { onComplete: () => void }) {
     const [privacyAccepted, setPrivacyAccepted] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [authError, setAuthError] = useState<string | null>(null);
+
+    if (!mounted) return null;
 
     const currentQ = QUESTIONS[step];
 

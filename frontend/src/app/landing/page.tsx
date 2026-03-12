@@ -288,7 +288,7 @@ export default function LandingPage() {
                     <h2 className="text-3xl md:text-5xl font-extrabold text-white mb-12 text-center">Zo ziet een les eruit</h2>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
                         <div className="bg-card-dark p-6 md:p-8 rounded-3xl border border-white/5 hover:border-primary/30 transition-all flex flex-col items-center text-center">
-                            <div className="relative w-20 h-20 md:w-24 md:h-24 mb-6">
+                            <div className="relative w-20 h-20 md:w-24 md:h-24 mb-6 bg-[#1a1a2e] rounded-2xl p-3">
                                 <Image
                                     src="/images/icons/3d-book.png"
                                     alt="Zelfstudie"
@@ -301,7 +301,7 @@ export default function LandingPage() {
                             <p className="text-slate-400 text-sm font-display">Focus op woordenschat, grammatica en je specifieke leerdoel voor deze sessie.</p>
                         </div>
                         <div className="bg-card-dark p-6 md:p-8 rounded-3xl border border-white/5 hover:border-primary/30 transition-all flex flex-col items-center text-center">
-                            <div className="relative w-20 h-20 md:w-24 md:h-24 mb-6">
+                            <div className="relative w-20 h-20 md:w-24 md:h-24 mb-6 bg-[#1a1a2e] rounded-2xl p-3">
                                 <Image
                                     src="/images/icons/3d-mic.png"
                                     alt="Oefening"
@@ -314,7 +314,7 @@ export default function LandingPage() {
                             <p className="text-slate-400 text-sm font-display">Luister naar audio, vul woorden in en maak interactieve oefeningen die direct feedback geven.</p>
                         </div>
                         <div className="bg-card-dark p-6 md:p-8 rounded-3xl border border-white/5 hover:border-primary/30 transition-all flex flex-col items-center text-center">
-                            <div className="relative w-20 h-20 md:w-24 md:h-24 mb-6">
+                            <div className="relative w-20 h-20 md:w-24 md:h-24 mb-6 bg-[#1a1a2e] rounded-2xl p-3">
                                 <Image
                                     src="/images/icons/3d-community.png"
                                     alt="Community"

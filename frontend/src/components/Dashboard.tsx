@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
@@ -20,7 +20,12 @@ import {
     Flame,
     Layout,
     ChevronRight,
-    LogOut
+    LogOut,
+    Menu,
+    X,
+    Home,
+    Settings,
+    MoreVertical
 } from 'lucide-react';
 import StudyLamp from './ui/StudyLamp';
 
@@ -53,6 +58,7 @@ const ICON_MAP: Record<string, any> = {
 
 export default function Dashboard() {
     const router = useRouter();
+    const pathname = usePathname();
     const [lessons, setLessons] = useState<EnrichedLesson[]>([]);
     const [loading, setLoading] = useState(true);
     const [mounted, setMounted] = useState(false);
@@ -60,6 +66,8 @@ export default function Dashboard() {
 
     const [activeUnitNumber, setActiveUnitNumber] = useState(1);
     const [studentName, setStudentName] = useState('Student');
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [isProfileOpen, setIsProfileOpen] = useState(false);
 
     const handleLogout = async () => {
         try {
@@ -188,19 +196,61 @@ export default function Dashboard() {
     const nextLesson = lessons.find(l => l.status === 'unlocked');
 
     return (
-        <div className="flex h-screen overflow-hidden bg-background-dark text-slate-100 font-display">
+        <div className="flex flex-col md:flex-row h-screen overflow-hidden bg-background-dark text-slate-100 font-display relative">
 
-            {/* 1. LEFT SIDEBAR */}
-            <aside className="w-[240px] flex-shrink-0 border-r border-slate-800/50 bg-background-dark flex flex-col p-6">
-                <div className="mb-4">
+            {/* MOBILE HEADER */}
+            <header className="md:hidden flex items-center justify-between p-4 border-b border-white/5 bg-background-dark/90 backdrop-blur-md sticky top-0 z-40">
+                <div className="flex items-center gap-2">
+                    <button 
+                        onClick={() => setIsSidebarOpen(true)}
+                        className="p-2 text-slate-400 hover:text-white"
+                    >
+                        <Menu className="w-6 h-6" />
+                    </button>
                     <Image
                         src="/images/logo-linguaenlinea-final.png"
                         alt="Linguaenlinea"
-                        width={200}
-                        height={50}
-                        className="h-16 w-auto object-contain"
+                        width={120}
+                        height={30}
+                        className="h-8 w-auto object-contain"
                     />
-                    <p className="text-slate-500 text-[10px] font-bold mt-2 uppercase tracking-[0.2em]">aprende aprendiendo</p>
+                </div>
+                <div className="flex items-center gap-3">
+                    <div className="flex flex-col items-end">
+                        <span className="text-[10px] text-accent-gold font-bold uppercase">{xp} XP</span>
+                        <div className="w-12 h-1 bg-slate-800 rounded-full overflow-hidden">
+                             <div className="h-full bg-accent-gold" style={{ width: `${Math.min((xp / 500) * 100, 100)}%` }}></div>
+                        </div>
+                    </div>
+                    <button 
+                        onClick={() => setIsProfileOpen(!isProfileOpen)}
+                        className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-xl border border-white/10"
+                    >
+                        🧑‍🎓
+                    </button>
+                </div>
+            </header>
+
+            {/* 1. LEFT SIDEBAR (DRAWER ON MOBILE) */}
+            <div 
+                className={`fixed inset-0 bg-black/60 backdrop-blur-sm z-50 transition-opacity duration-300 md:hidden ${isSidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+                onClick={() => setIsSidebarOpen(false)}
+            />
+            <aside className={`fixed md:relative inset-y-0 left-0 w-[240px] flex-shrink-0 border-r border-slate-800/50 bg-background-dark flex flex-col p-6 z-50 transition-transform duration-300 md:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+                <div className="flex items-center justify-between mb-4">
+                    <div className="mb-2">
+                        <Image
+                            src="/images/logo-linguaenlinea-final.png"
+                            alt="Linguaenlinea"
+                            width={160}
+                            height={40}
+                            className="h-12 w-auto object-contain"
+                        />
+                        <p className="text-slate-500 text-[10px] font-bold mt-1 uppercase tracking-[0.2em]">aprende aprendiendo</p>
+                    </div>
+                    <button className="md:hidden p-2 text-slate-500" onClick={() => setIsSidebarOpen(false)}>
+                        <X className="w-6 h-6" />
+                    </button>
                 </div>
 
                 <div className="flex flex-col gap-1 flex-grow overflow-y-auto custom-scrollbar">
@@ -259,7 +309,7 @@ export default function Dashboard() {
             </aside>
 
             {/* 2. CENTER CONTENT */}
-            <main className="flex-grow overflow-y-auto custom-scrollbar bg-background-dark p-8">
+            <main className="flex-grow overflow-y-auto custom-scrollbar bg-background-dark p-4 md:p-8 pb-32 md:pb-8">
                 <div className="max-w-4xl mx-auto">
                     {loading ? (
                         <div className="flex flex-col items-center justify-center py-32 text-slate-500 animate-pulse">
@@ -269,7 +319,7 @@ export default function Dashboard() {
                     ) : (
                         <>
                             <header className="mb-10">
-                                <h2 className="text-3xl font-extrabold text-slate-100 mb-6">
+                                <h2 className="text-2xl md:text-3xl font-extrabold text-slate-100 mb-4 md:mb-6 leading-tight">
                                     Unidad {activeUnit?.unitNumber} — {activeUnit?.name}
                                 </h2>
                                 <div className="bg-slate-800/30 rounded-full h-4 w-full relative overflow-hidden shadow-inner">
@@ -296,34 +346,34 @@ export default function Dashboard() {
                                     return (
                                         <div
                                             key={lesson.id}
-                                            className={`relative overflow-hidden transition-all duration-300 rounded-xl p-6 flex items-center justify-between
+                                            className={`relative overflow-hidden transition-all duration-300 rounded-xl p-4 md:p-6 flex flex-col sm:flex-row items-center justify-between gap-4 md:gap-0
                         ${isCompleted
                                                     ? 'bg-[#121812] border-l-4 border-green-500 shadow-lg'
                                                     : isUnlocked
                                                         ? 'bg-card-dark border-l-4 border-[#FF6B6B] shadow-2xl hover:bg-[#1f1f3a]'
                                                         : 'bg-card-dark/40 border-l-4 border-slate-700/50 opacity-80'}`}
                                         >
-                                            <div className="flex items-center gap-6">
-                                                <div className={`w-16 h-16 rounded-xl flex items-center justify-center
+                                            <div className="flex items-center gap-4 md:gap-6 w-full sm:w-auto">
+                                                <div className={`w-12 h-12 md:w-16 md:h-16 flex-shrink-0 rounded-xl flex items-center justify-center
                           ${isCompleted
                                                         ? 'bg-green-500/10'
                                                         : isUnlocked
                                                             ? 'bg-primary/20'
                                                             : 'bg-slate-800'}`}>
                                                     {isCompleted ? (
-                                                        <CheckCircle2 className="text-green-500 w-8 h-8" />
+                                                        <CheckCircle2 className="text-green-500 w-6 h-6 md:w-8 md:h-8" />
                                                     ) : (
-                                                        <LessonIcon className={`w-8 h-8 ${isUnlocked ? 'text-primary' : 'text-slate-500'}`} />
+                                                        <LessonIcon className={`w-6 h-6 md:w-8 md:h-8 ${isUnlocked ? 'text-primary' : 'text-slate-500'}`} />
                                                     )}
                                                 </div>
-                                                <div>
+                                                <div className="min-w-0">
                                                     <div className="flex items-center gap-2">
-                                                        <span className="text-slate-500 text-xs font-bold">{lesson.order_index}.</span>
-                                                        <h3 className={`text-lg font-bold ${isLocked ? 'text-slate-500' : 'text-slate-100'}`}>
+                                                        <span className="text-slate-500 text-[10px] md:text-xs font-bold">{lesson.order_index}.</span>
+                                                        <h3 className={`text-base md:text-lg font-bold truncate ${isLocked ? 'text-slate-500' : 'text-slate-100'}`}>
                                                             {lesson.title}
                                                         </h3>
                                                     </div>
-                                                    <p className={`text-sm mt-0.5 ${isLocked ? 'text-slate-600' : 'text-slate-400'}`}>
+                                                    <p className={`text-xs md:text-sm mt-0.5 line-clamp-2 ${isLocked ? 'text-slate-600' : 'text-slate-400'}`}>
                                                         {lesson.content_json?.can_do
                                                             ? lesson.content_json.can_do.length > 80
                                                                 ? lesson.content_json.can_do.substring(0, 80) + "..."
@@ -333,26 +383,26 @@ export default function Dashboard() {
                                                 </div>
                                             </div>
 
-                                            <div className="flex items-center gap-3">
+                                            <div className="flex items-center gap-3 w-full sm:w-auto mt-2 sm:mt-0">
                                                 {isLocked ? (
-                                                    <button className="bg-slate-800 text-slate-500 font-bold py-2 px-6 rounded-lg cursor-not-allowed border border-slate-700">
+                                                    <button className="flex-grow sm:flex-grow-0 bg-slate-800 text-slate-500 font-bold py-2.5 px-6 rounded-lg text-sm cursor-not-allowed border border-slate-700">
                                                         Vergrendeld
                                                     </button>
                                                 ) : isUnlocked ? (
                                                     <Link
                                                         href={`/lesson/${lesson.id}`}
-                                                        className="bg-[#FF6B6B] hover:bg-[#ff5252] text-white font-bold py-2 px-6 rounded-lg flex items-center gap-2 transition-all shadow-lg shadow-[#FF6B6B]/20 transition-transform active:scale-95"
+                                                        className="flex-grow sm:flex-grow-0 bg-[#FF6B6B] hover:bg-[#ff5252] text-white font-bold py-2.5 px-6 rounded-lg text-sm flex items-center justify-center gap-2 transition-all shadow-lg shadow-[#FF6B6B]/20 active:scale-95 text-center"
                                                     >
                                                         Start les <Play className="w-4 h-4 fill-current" />
                                                     </Link>
                                                 ) : (
-                                                    <div className="flex items-center gap-2">
-                                                        <span className="text-green-500 text-xs font-bold bg-green-500/10 px-2 py-1 rounded border border-green-500/20">
+                                                    <div className="flex items-center gap-3 w-full sm:w-auto">
+                                                        <span className="text-green-500 text-[10px] md:text-xs font-bold bg-green-500/10 px-2.5 py-1 rounded border border-green-500/20">
                                                             {lesson.bestScore}%
                                                         </span>
                                                         <Link
                                                             href={`/lesson/${lesson.id}`}
-                                                            className="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-2 px-6 rounded-lg transition-colors border border-slate-600"
+                                                            className="flex-grow sm:flex-grow-0 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-2.5 px-6 rounded-lg text-sm transition-colors border border-slate-600 text-center"
                                                         >
                                                             Herhaal
                                                         </Link>
@@ -532,6 +582,77 @@ export default function Dashboard() {
                     <p className="text-center text-slate-500 text-xs mt-4">Klaar voor de volgende stap?</p>
                 </div>
             </aside>
+
+            {/* MOBILE BOTTOM NAVIGATION */}
+            <nav className="fixed bottom-0 left-0 w-full md:hidden bg-background-dark/90 backdrop-blur-md border-t border-white/5 p-4 flex items-center justify-around z-40">
+                <button 
+                  onClick={() => router.push('/dashboard')}
+                  className={`flex flex-col items-center gap-1 ${pathname === '/dashboard' ? 'text-primary' : 'text-slate-400'}`}
+                >
+                    <Home className={`w-6 h-6 ${pathname === '/dashboard' ? 'border-b-2 border-primary pb-1' : ''}`} />
+                    <span className="text-[10px] font-bold uppercase text-primary">Home</span>
+                </button>
+                <button 
+                  onClick={() => setIsSidebarOpen(true)}
+                  className="flex flex-col items-center gap-1 text-slate-400"
+                >
+                    <BookOpen className="w-6 h-6" />
+                    <span className="text-[10px] font-bold uppercase">Lessen</span>
+                </button>
+                <button className="flex flex-col items-center gap-1 text-slate-400">
+                    <Trophy className="w-6 h-6" />
+                    <span className="text-[10px] font-bold uppercase">Rank</span>
+                </button>
+                <button className="flex flex-col items-center gap-1 text-slate-400">
+                    <Settings className="w-6 h-6" />
+                    <span className="text-[10px] font-bold uppercase">Instel.</span>
+                </button>
+            </nav>
+
+            {/* MOBILE PROFILE OVERLAY */}
+            {isProfileOpen && (
+                <div className="md:hidden fixed inset-0 z-[60] bg-background-dark p-6 flex flex-col items-center animate-in slide-in-from-right duration-300">
+                    <button 
+                        onClick={() => setIsProfileOpen(false)}
+                        className="absolute top-6 right-6 p-2 text-slate-400"
+                    >
+                        <X className="w-8 h-8" />
+                    </button>
+
+                    <div className="mt-12 flex flex-col items-center text-center">
+                        <div className="w-32 h-32 rounded-full bg-card-dark flex items-center justify-center border-2 border-slate-700 shadow-xl overflow-hidden mb-6">
+                            <span className="text-6xl">🧑‍🎓</span>
+                        </div>
+                        <h3 className="text-2xl font-bold text-slate-100">{studentName}</h3>
+                        <span className="text-sm font-bold text-primary bg-primary/10 px-4 py-2 rounded-full mt-3 border border-primary/20">
+                            Nederlands Track A1
+                        </span>
+                    </div>
+
+                    <div className="w-full mt-10 grid grid-cols-2 gap-4">
+                         <div className="bg-card-dark p-4 rounded-xl border border-slate-800/50">
+                            <p className="text-[10px] text-slate-500 font-bold uppercase mb-1">XP</p>
+                            <p className="text-xl font-extrabold text-slate-100">{xp}</p>
+                        </div>
+                        <div className="bg-card-dark p-4 rounded-xl border border-slate-800/50">
+                            <p className="text-[10px] text-slate-500 font-bold uppercase mb-1">Badge</p>
+                            <p className="text-xl font-extrabold text-slate-100">🏆</p>
+                        </div>
+                    </div>
+
+                    <div className="mt-auto w-full space-y-4">
+                        <button className="w-full py-4 text-slate-300 font-bold border border-white/5 rounded-2xl flex items-center justify-center gap-3">
+                            <Settings className="w-5 h-5" /> Account Instellingen
+                        </button>
+                        <button 
+                            onClick={handleLogout}
+                            className="w-full py-4 bg-red-500 text-white font-bold rounded-2xl transition-all active:scale-95"
+                        >
+                            Uitloggen
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

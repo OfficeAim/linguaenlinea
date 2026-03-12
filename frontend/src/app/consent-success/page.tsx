@@ -8,7 +8,7 @@ import { motion } from 'framer-motion';
 
 export default function ConsentSuccessPage() {
   return (
-    <div className="min-h-screen bg-[#0D0D0D] flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen bg-[#0D0D0D] flex flex-col items-center justify-center p-4 md:p-8 lg:px-16">
       <motion.div 
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}

@@ -43,26 +43,25 @@ export default function PrivacyPage() {
             <div className="relative z-10">
                 {/* NAV */}
                 <nav className="sticky top-0 z-50 w-full border-b border-white/10 bg-background-dark/80 backdrop-blur-md">
-                    <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                            <button onClick={() => router.push('/')} className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors text-sm font-bold">
-                                <ArrowLeft className="w-4 h-4" /> Terug
-                            </button>
-                            <div className="flex flex-col items-center gap-2 mt-4 ml-10">
-                                <Image
-                                    src="/images/logo-linguaenlinea-final.png"
-                                    alt="Linguaenlinea"
-                                    width={200}
-                                    height={50}
-                                    className="h-24 w-auto object-contain"
-                                />
-                                <span className="text-[10px] uppercase tracking-widest text-[#D4AF37] font-medium text-center">aprende aprendiendo</span>
-                            </div>
+                    <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-16 h-16 flex items-center justify-between">
+                        <button onClick={() => router.push('/')} className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors text-xs md:text-sm font-bold">
+                            <ArrowLeft className="w-4 h-4" /> Terug
+                        </button>
+                        <div className="flex flex-col items-center gap-0 md:gap-2">
+                            <Image
+                                src="/images/logo-linguaenlinea-final.png"
+                                alt="Linguaenlinea"
+                                width={120}
+                                height={30}
+                                className="h-10 md:h-20 w-auto object-contain"
+                            />
+                            <span className="text-[8px] md:text-[10px] uppercase tracking-widest text-[#D4AF37] font-medium text-center">aprende aprendiendo</span>
                         </div>
+                        <div className="w-16 md:hidden"></div>
                     </div>
                 </nav>
 
-                <main className="max-w-4xl mx-auto px-6 py-16 md:py-24">
+                <main className="max-w-6xl mx-auto px-4 md:px-8 lg:px-16 py-12 md:py-24">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -110,7 +109,7 @@ export default function PrivacyPage() {
                 </main>
 
                 {/* FOOTER */}
-                <footer className="py-10 px-6 border-t border-white/5 bg-background-dark">
+                <footer className="py-10 px-4 md:px-8 lg:px-16 border-t border-white/5 bg-background-dark">
                     <div className="max-w-6xl mx-auto flex flex-col items-center gap-6">
                         <div className="flex flex-col items-center gap-2">
                             <Image

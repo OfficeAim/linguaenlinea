@@ -247,7 +247,7 @@ export default function LessonView({ id }: { id: string }) {
                     }}
                 />
             )}
-            <div className="p-4 md:p-8 lg:max-w-6xl lg:mx-auto pb-32">
+            <div className="px-4 md:px-8 lg:px-16 py-8 lg:max-w-7xl lg:mx-auto pb-32">
                 {/* Navigation Header */}
                 <header className="flex items-center justify-between mb-8">
                     <Link href="/" className="flex items-center text-gray-400 hover:text-white transition-colors">
@@ -265,12 +265,11 @@ export default function LessonView({ id }: { id: string }) {
 
                 {/* Lesson Title Room */}
                 <div className="mb-8">
-                    <div className="text-brand-coral font-bold tracking-widest text-sm mb-2 uppercase">Lesson {lesson.order_index}</div>
-                    <h1 className="text-3xl md:text-5xl font-bold text-white mb-4">{lesson.title}</h1>
-                    {content?.can_do && (
-                        <div className="border-l-4 border-brand-coral bg-[#1a1a2e] p-4 rounded-lg mb-4 shadow-sm">
-                            <div className="text-brand-gold text-sm font-semibold mb-2">🎯 Leerdoel</div>
-                            <p className="text-gray-300 text-base">
+                    <h1 className="text-2xl md:text-5xl font-black text-white mb-4">{lesson.title}</h1>
+                        {content?.can_do && (
+                            <div className="border-l-4 border-primary bg-white/5 p-4 md:p-6 rounded-2xl mb-8 shadow-sm">
+                                <div className="text-accent-gold text-xs font-black mb-2 uppercase tracking-widest">🎯 Leerdoel</div>
+                                <p className="text-slate-300 text-base md:text-lg">
                                 {(() => {
                                     // Remove ALL CAPS (words with 2+ uppercase letters)
                                     const noAllCaps = content.can_do.replace(/\b[A-Z]{2,}\b/g, (match) => match.toLowerCase());

@@ -24,9 +24,9 @@ const FAQCategory = ({ title, iconSrc, items, borderColor, activeColor }: { titl
     const [openIndex, setOpenIndex] = useState<number | null>(null);
 
     return (
-        <section className={`bg-white/5 border-l-4 ${borderColor} p-8 rounded-3xl space-y-6`}>
-            <div className="flex items-center gap-4 mb-6">
-                <div className={`w-14 h-14 rounded-xl flex items-center justify-center bg-white/5 relative`}>
+        <section className={`bg-white/5 border-l-4 ${borderColor} p-6 md:p-8 rounded-3xl space-y-6`}>
+            <div className="flex items-center gap-4 mb-4 md:mb-6">
+                <div className={`w-12 h-12 md:w-14 md:h-14 rounded-xl flex items-center justify-center bg-white/5 relative shrink-0`}>
                     <Image
                         src={iconSrc}
                         alt={title}
@@ -34,7 +34,7 @@ const FAQCategory = ({ title, iconSrc, items, borderColor, activeColor }: { titl
                         className="object-contain p-1"
                     />
                 </div>
-                <h2 className="text-2xl md:text-3xl font-black text-white">{title}</h2>
+                <h2 className="text-xl md:text-3xl font-black text-white">{title}</h2>
             </div>
 
             <div className="space-y-4">
@@ -44,13 +44,13 @@ const FAQCategory = ({ title, iconSrc, items, borderColor, activeColor }: { titl
                             onClick={() => setOpenIndex(openIndex === index ? null : index)}
                             className="w-full flex items-center justify-between text-left py-2 group"
                         >
-                            <span className={`text-lg font-bold transition-colors ${openIndex === index ? activeColor : 'text-slate-300 group-hover:text-white'}`}>
+                            <span className={`text-base md:text-lg font-bold transition-colors ${openIndex === index ? activeColor : 'text-slate-300 group-hover:text-white'}`}>
                                 {item.question}
                             </span>
                             {openIndex === index ? (
-                                <Minus className={`w-5 h-5 ${activeColor}`} />
+                                <Minus className={`w-5 h-5 shrink-0 ${activeColor}`} />
                             ) : (
-                                <Plus className="w-5 h-5 text-slate-500 group-hover:text-white transition-colors" />
+                                <Plus className="w-5 h-5 shrink-0 text-slate-500 group-hover:text-white transition-colors" />
                             )}
                         </button>
                         <AnimatePresence>
@@ -62,7 +62,7 @@ const FAQCategory = ({ title, iconSrc, items, borderColor, activeColor }: { titl
                                     transition={{ duration: 0.3, ease: "easeInOut" }}
                                     className="overflow-hidden"
                                 >
-                                    <p className="py-4 text-slate-400 leading-relaxed text-lg">
+                                    <p className="py-3 md:py-4 text-slate-400 leading-relaxed text-sm md:text-lg">
                                         {item.answer}
                                     </p>
                                 </motion.div>
@@ -163,35 +163,34 @@ export default function FAQPage() {
             <div className="relative z-10">
                 {/* NAV */}
                 <nav className="sticky top-0 z-50 w-full border-b border-white/10 bg-background-dark/80 backdrop-blur-md">
-                    <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                            <button onClick={() => router.push('/')} className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors text-sm font-bold">
-                                <ArrowLeft className="w-4 h-4" /> Terug
-                            </button>
-                            <div className="flex flex-col items-center gap-2 mt-4 ml-10">
-                                <Image
-                                    src="/images/logo-linguaenlinea-final.png"
-                                    alt="Linguaenlinea"
-                                    width={200}
-                                    height={50}
-                                    className="h-24 w-auto object-contain"
-                                />
-                                <span className="text-[10px] uppercase tracking-widest text-[#D4AF37] font-medium text-center">aprende aprendiendo</span>
-                            </div>
+                    <div className="max-w-7xl mx-auto px-4 md:px-6 h-16 flex items-center justify-between">
+                        <button onClick={() => router.push('/')} className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors text-xs md:text-sm font-bold">
+                            <ArrowLeft className="w-4 h-4" /> Terug
+                        </button>
+                        <div className="flex flex-col items-center gap-0 md:gap-2">
+                            <Image
+                                src="/images/logo-linguaenlinea-final.png"
+                                alt="Linguaenlinea"
+                                width={120}
+                                height={30}
+                                className="h-10 md:h-20 w-auto object-contain"
+                            />
+                            <span className="text-[8px] md:text-[10px] uppercase tracking-widest text-[#D4AF37] font-medium text-center">aprende aprendiendo</span>
                         </div>
+                        <div className="w-16 md:hidden"></div>
                     </div>
                 </nav>
 
-                <main className="max-w-5xl mx-auto px-6 py-16 md:py-24">
+                <main className="max-w-6xl mx-auto px-4 md:px-8 lg:px-16 py-12 md:py-24">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="text-center mb-16"
+                        className="text-center mb-12 md:text-center md:mb-16"
                     >
-                        <h1 className="text-4xl md:text-6xl font-black text-white mb-6">
+                        <h1 className="text-3xl md:text-6xl font-black text-white mb-4 md:mb-6">
                             Veelgestelde <span className="text-primary">vragen</span>
                         </h1>
-                        <p className="text-slate-400 text-xl max-w-2xl mx-auto">
+                        <p className="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto">
                             Alles wat je wilt weten over Linguaenlinea
                         </p>
                     </motion.div>
@@ -211,7 +210,7 @@ export default function FAQPage() {
                 </main>
 
                 {/* FOOTER */}
-                <footer className="py-10 px-6 border-t border-white/5 bg-background-dark">
+                <footer className="py-10 px-4 md:px-8 lg:px-16 border-t border-white/5 bg-background-dark">
                     <div className="max-w-6xl mx-auto flex flex-col items-center gap-6">
                         <div className="flex flex-col items-center gap-2">
                             <Image

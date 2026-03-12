@@ -236,10 +236,10 @@ export default function Onboarding({ onComplete }: { onComplete: () => void }) {
 
     if (showAccountCreation) {
         return (
-            <div className="min-h-screen bg-brand-charcoal flex flex-col items-center justify-center p-4">
-                <div className="w-full max-w-2xl bg-brand-charcoal-light rounded-2xl shadow-2xl p-8 border border-gray-800">
-                    <h1 className="text-3xl font-bold text-white mb-2 text-center">Maak je account aan</h1>
-                    <p className="text-gray-400 mb-8 text-center">Sla je voortgang op en begin met leren</p>
+            <div className="min-h-screen bg-brand-charcoal flex flex-col items-center justify-center p-4 md:p-6 overflow-x-hidden">
+                <div className="w-full max-w-2xl bg-brand-charcoal-light rounded-2xl shadow-2xl p-6 md:p-10 border border-gray-800">
+                    <h1 className="text-2xl md:text-3xl font-bold text-white mb-2 text-center leading-tight">Maak je account aan</h1>
+                    <p className="text-gray-400 mb-6 md:mb-8 text-center text-sm md:text-base">Sla je voortgang op en begin met leren</p>
 
                     <div className="space-y-6">
                         <div className="space-y-2">
@@ -357,7 +357,7 @@ export default function Onboarding({ onComplete }: { onComplete: () => void }) {
 
                     <button 
                         onClick={() => setShowAccountCreation(false)}
-                        className="mt-6 text-gray-500 hover:text-white transition-colors w-full text-sm"
+                        className="mt-6 text-gray-500 hover:text-white transition-colors w-full text-sm font-medium py-2"
                     >
                         ← Terug naar vragen
                     </button>
@@ -367,19 +367,19 @@ export default function Onboarding({ onComplete }: { onComplete: () => void }) {
     }
 
     return (
-        <div className="min-h-screen bg-brand-charcoal flex flex-col items-center justify-center p-4">
-            <div className="w-full max-w-2xl bg-brand-charcoal-light rounded-2xl shadow-2xl p-8 border border-gray-800">
+        <div className="min-h-screen bg-brand-charcoal flex flex-col items-center justify-center p-3 md:p-6 overflow-x-hidden">
+            <div className="w-full max-w-2xl bg-brand-charcoal-light rounded-2xl shadow-2xl p-5 md:p-10 border border-gray-800">
 
                 {/* Progress bar */}
-                <div className="w-full h-2 bg-gray-800 rounded-full mb-8 overflow-hidden">
+                <div className="w-full h-1.5 bg-gray-800 rounded-full mb-6 md:mb-10 overflow-hidden">
                     <div
                         className="h-full bg-brand-coral transition-all duration-300 ease-out"
                         style={{ width: `${((step + 1) / QUESTIONS.length) * 100}%` }}
                     />
                 </div>
 
-                <h1 className="text-3xl font-bold text-white mb-2">{currentQ.title}</h1>
-                <p className="text-gray-400 mb-8">
+                <h1 className="text-2xl md:text-3xl font-bold text-white mb-2 leading-tight">{currentQ.title}</h1>
+                <p className="text-gray-400 mb-6 md:mb-8 text-sm md:text-base">
                     Vraag {step + 1} van {QUESTIONS.length}
                     {currentQ.type === 'multiselect' && ` (Kies er maximaal ${currentQ.max})`}
                 </p>
@@ -407,10 +407,10 @@ export default function Onboarding({ onComplete }: { onComplete: () => void }) {
                                 <button
                                     key={option.id}
                                     onClick={() => handleSelect(option.id)}
-                                    className={`w-full text-left p-4 rounded-xl border-2 transition-all duration-200 flex justify-between items-center ${isSelected ? 'border-brand-gold bg-brand-gold/10' : 'border-gray-700 hover:border-brand-coral hover:bg-brand-coral/5'}`}
+                                    className={`w-full text-left p-3.5 md:p-5 rounded-xl border-2 transition-all duration-200 flex justify-between items-center ${isSelected ? 'border-brand-gold bg-brand-gold/10' : 'border-gray-700 hover:border-brand-coral hover:bg-brand-coral/5'}`}
                                 >
-                                    <span className="text-lg text-gray-200">{option.label}</span>
-                                    {isSelected && <Check className="text-brand-gold w-6 h-6" />}
+                                    <span className="text-base md:text-lg text-gray-200 leading-tight">{option.label}</span>
+                                    {isSelected && <Check className="text-brand-gold w-5 h-5 md:w-6 md:h-6 flex-shrink-0 ml-2" />}
                                 </button>
                             );
                         })

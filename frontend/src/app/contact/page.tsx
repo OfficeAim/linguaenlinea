@@ -50,55 +50,54 @@ export default function ContactPage() {
             <div className="relative z-10">
                 {/* NAV */}
                 <nav className="sticky top-0 z-50 w-full border-b border-white/10 bg-background-dark/80 backdrop-blur-md">
-                    <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                            <button onClick={() => router.push('/')} className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors text-sm font-bold">
-                                <ArrowLeft className="w-4 h-4" /> Terug
-                            </button>
-                            <div className="flex flex-col items-center gap-2 mt-4 ml-10">
-                                <Image
-                                    src="/images/logo-linguaenlinea-final.png"
-                                    alt="Linguaenlinea"
-                                    width={200}
-                                    height={50}
-                                    className="h-24 w-auto object-contain"
-                                />
-                                <span className="text-[10px] uppercase tracking-widest text-[#D4AF37] font-medium text-center">aprende aprendiendo</span>
-                            </div>
+                    <div className="max-w-7xl mx-auto px-4 md:px-6 h-16 flex items-center justify-between">
+                        <button onClick={() => router.push('/')} className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors text-xs md:text-sm font-bold">
+                            <ArrowLeft className="w-4 h-4" /> Terug
+                        </button>
+                        <div className="flex flex-col items-center gap-0 md:gap-2">
+                            <Image
+                                src="/images/logo-linguaenlinea-final.png"
+                                alt="Linguaenlinea"
+                                width={120}
+                                height={30}
+                                className="h-10 md:h-20 w-auto object-contain"
+                            />
+                            <span className="text-[8px] md:text-[10px] uppercase tracking-widest text-[#D4AF37] font-medium text-center">aprende aprendiendo</span>
                         </div>
+                        <div className="w-16 md:hidden"></div>
                     </div>
                 </nav>
 
-                <main className="max-w-6xl mx-auto px-6 py-16 grid lg:grid-cols-2 gap-16 items-start">
+                <main className="max-w-6xl mx-auto px-4 md:px-8 lg:px-16 py-12 md:py-16 grid lg:grid-cols-2 gap-12 lg:gap-16 items-start">
                     {/* INFO COLUMN */}
-                    <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
-                        <h1 className="text-4xl md:text-6xl font-black text-white mb-6">
+                    <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="text-center lg:text-left">
+                        <h1 className="text-3xl md:text-6xl font-black text-white mb-6">
                             Neem <span className="text-primary">contact</span> op
                         </h1>
-                        <p className="text-slate-400 text-lg mb-12 max-w-md">
+                        <p className="text-base md:text-lg text-slate-400 mb-8 md:mb-12 max-w-md mx-auto lg:mx-0">
                             Heb je vragen over de lessen, een technisch probleem of wil je samenwerken? Ik hoor graag van je!
                         </p>
-
-                        <div className="space-y-6">
-                            <div className="bg-white/5 border border-white/10 p-6 rounded-2xl flex items-start gap-4">
-                                <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
-                                    <Mail className="w-6 h-6" />
+ 
+                        <div className="space-y-4 md:space-y-6 max-w-md mx-auto lg:mx-0">
+                            <div className="bg-white/5 border border-white/10 p-4 md:p-6 rounded-2xl flex items-start gap-4">
+                                <div className="w-10 h-10 md:w-12 md:h-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary shrink-0">
+                                    <Mail className="w-5 h-5 md:w-6 md:h-6" />
                                 </div>
-                                <div>
-                                    <h4 className="text-white font-bold mb-1">Email</h4>
-                                    <a href="mailto:contact@linguaenlinea.eu" className="text-slate-400 hover:text-primary transition-colors">
+                                <div className="text-left">
+                                    <h4 className="text-white font-bold mb-1 text-sm md:text-base">Email</h4>
+                                    <a href="mailto:contact@linguaenlinea.eu" className="text-slate-400 hover:text-primary transition-colors text-sm md:text-base break-words">
                                         contact@linguaenlinea.eu
                                     </a>
                                 </div>
                             </div>
-
-                            <div className="bg-white/5 border border-white/10 p-6 rounded-2xl flex items-start gap-4">
-                                <div className="w-12 h-12 bg-[#1877F2]/10 rounded-xl flex items-center justify-center text-[#1877F2]">
-                                    <Facebook className="w-6 h-6" />
+ 
+                            <div className="bg-white/5 border border-white/10 p-4 md:p-6 rounded-2xl flex items-start gap-4">
+                                <div className="w-10 h-10 md:w-12 md:h-12 bg-[#1877F2]/10 rounded-xl flex items-center justify-center text-[#1877F2] shrink-0">
+                                    <Facebook className="w-5 h-5 md:w-6 md:h-6" />
                                 </div>
-                                <div>
-                                    <h4 className="text-white font-bold mb-1">Community</h4>
-                                    <a href="https://www.facebook.com/linguaenlinea" target="_blank" className="text-slate-400 hover:text-[#1877F2] transition-colors">
+                                <div className="text-left">
+                                    <h4 className="text-white font-bold mb-1 text-sm md:text-base">Community</h4>
+                                    <a href="https://www.facebook.com/linguaenlinea" target="_blank" className="text-slate-400 hover:text-[#1877F2] transition-colors text-sm md:text-base">
                                         Ga naar de Facebook groep →
                                     </a>
                                 </div>
@@ -119,7 +118,7 @@ export default function ContactPage() {
                                     </button>
                                 </motion.div>
                             ) : (
-                                <form key="form" onSubmit={handleSubmit} className="bg-white/5 border border-white/10 p-8 md:p-10 rounded-[2.5rem] space-y-6">
+                                <form key="form" onSubmit={handleSubmit} className="bg-white/5 border border-white/10 p-6 md:p-10 rounded-[2rem] md:rounded-[2.5rem] space-y-5 md:space-y-6">
                                     <div className="grid md:grid-cols-2 gap-6">
                                         <div className="space-y-2">
                                             <label className="text-sm font-bold text-slate-400 ml-1">Naam</label>
@@ -170,7 +169,7 @@ export default function ContactPage() {
                 </main>
 
                 {/* FOOTER */}
-                <footer className="py-10 px-6 border-t border-white/5 bg-background-dark">
+                <footer className="py-10 px-4 md:px-8 lg:px-16 border-t border-white/5 bg-background-dark">
                     <div className="max-w-6xl mx-auto flex flex-col items-center gap-6">
                         <div className="flex flex-col items-center gap-2">
                             <Image

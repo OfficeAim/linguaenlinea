@@ -103,27 +103,27 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0D0D0D] flex flex-col items-center justify-center p-4 selection:bg-[#FF6B6B]/30">
+    <div className="min-h-screen bg-[#0D0D0D] flex flex-col items-center justify-center p-4 md:p-8 lg:p-16 selection:bg-[#FF6B6B]/30">
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md"
+        className="w-full max-w-[400px] z-10"
       >
         {/* Logo */}
-        <div className="flex flex-col items-center mb-10">
+        <div className="flex flex-col items-center mb-10 px-4">
           <Link href="/landing">
             <Image 
               src="/images/logo-dark-final.png" 
               alt="Linguaenlinea" 
-              width={220} 
-              height={80} 
-              className="mb-4 cursor-pointer"
+              width={180} 
+              height={60} 
+              className="mb-4 cursor-pointer w-[160px] md:w-[220px] h-auto"
             />
           </Link>
-          <h1 className="text-3xl font-bold text-white tracking-tight">Welkom terug 👋</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight text-center">Welkom terug 👋</h1>
         </div>
 
-        <div className="bg-[#1A1A1A] border border-white/10 rounded-2xl p-8 shadow-2xl backdrop-blur-sm">
+        <div className="bg-[#1A1A1A] border border-white/10 rounded-2xl p-6 md:p-8 shadow-2xl backdrop-blur-sm mx-4 md:mx-0">
           <form onSubmit={handleLogin} className="space-y-6">
             {/* Email Field */}
             <div className="space-y-2">

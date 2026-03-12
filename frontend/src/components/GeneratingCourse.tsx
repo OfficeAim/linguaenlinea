@@ -56,14 +56,14 @@ export default function GeneratingCourse({
             <motion.div
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="mb-16"
+                className="mb-8 md:mb-16"
             >
                 <Image
                     src="/images/logo-linguaenlinea-final.png"
                     alt="Linguaenlinea"
-                    width={200}
-                    height={50}
-                    className="h-16 w-auto object-contain"
+                    width={180}
+                    height={45}
+                    className="h-12 md:h-16 w-auto object-contain"
                 />
             </motion.div>
 
@@ -72,16 +72,16 @@ export default function GeneratingCourse({
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3 }}
-                className="text-slate-400 text-lg mb-10 text-center"
+                className="text-slate-400 text-base md:text-lg mb-6 md:mb-10 text-center"
             >
                 Welkom, <span className="text-white font-bold">{studentName}</span>!
             </motion.p>
 
             {/* Main shimmer text */}
-            <div className="mb-12 text-center">
+            <div className="mb-8 md:mb-12 text-center">
                 <TextShimmer
                     duration={1.8}
-                    className="text-3xl md:text-4xl font-black [--base-color:#FF6B6B] [--base-gradient-color:#FFB800]"
+                    className="text-2xl md:text-4xl font-black [--base-color:#FF6B6B] [--base-gradient-color:#FFB800]"
                 >
                     Jouw cursus wordt aangemaakt...
                 </TextShimmer>

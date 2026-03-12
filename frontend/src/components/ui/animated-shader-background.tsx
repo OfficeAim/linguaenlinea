@@ -14,15 +14,20 @@ const AnimatedShaderBackground = () => {
         renderer.setSize(container.offsetWidth, container.offsetHeight);
         container.appendChild(renderer.domElement);
 
+        const isMobile = window.innerWidth < 768;
+        const iterations = isMobile ? 15 : 35;
+
         const material = new THREE.ShaderMaterial({
             uniforms: {
                 iTime: { value: 0 },
-                iResolution: { value: new THREE.Vector2(container.offsetWidth, container.offsetHeight) }
+                iResolution: { value: new THREE.Vector2(container.offsetWidth, container.offsetHeight) },
+                iIterations: { value: iterations }
             },
             vertexShader: `void main() { gl_Position = vec4(position, 1.0); }`,
             fragmentShader: `
         uniform float iTime;
         uniform vec2 iResolution;
+        uniform float iIterations;
         #define NUM_OCTAVES 3
         float rand(vec2 n) { return fract(sin(dot(n, vec2(12.9898, 4.1414))) * 43758.5453); }
         float noise(vec2 p) {
@@ -43,14 +48,15 @@ const AnimatedShaderBackground = () => {
           vec2 v; vec4 o=vec4(0.);
           float f=2.+fbm(p+vec2(iTime*5.,0.))*0.5;
           for(float i=0.;i<35.;i++){
+            if(i >= iIterations) break;
             v=p+cos(i*i+(iTime+p.x*0.08)*0.025+i*vec2(13.,11.))*3.5+vec2(sin(iTime*3.+i)*0.003,cos(iTime*3.5-i)*0.003);
-            float tailNoise=fbm(v+vec2(iTime*0.5,i))*0.3*(1.-(i/35.));
+            float tailNoise=fbm(v+vec2(iTime*0.5,i))*0.3*(1.-(i/iIterations));
             vec4 auroraColors=vec4(
               0.1+0.3*sin(i*0.2+iTime*0.4),
               0.3+0.5*cos(i*0.3+iTime*0.5),
               0.7+0.3*sin(i*0.4+iTime*0.3),1.);
             vec4 cur=auroraColors*exp(sin(i*i+iTime*0.8))/length(max(v,vec2(v.x*f*0.015,v.y*1.5)));
-            float thin=smoothstep(0.,1.,i/35.)*0.6;
+            float thin=smoothstep(0.,1.,i/iIterations)*0.6;
             o+=cur*(1.+tailNoise*0.8)*thin;
           }
           o=tanh(pow(o/100.,vec4(1.6)));

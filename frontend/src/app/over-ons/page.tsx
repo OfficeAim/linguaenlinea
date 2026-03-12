@@ -142,13 +142,15 @@ function ParticleHero() {
     useEffect(() => {
         const canvas = canvasRef.current
         if (!canvas) return
-        canvas.width = 900; canvas.height = 260
+        const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+        canvas.width = isMobile ? 360 : 900;
+        canvas.height = isMobile ? 180 : 260;
         nextWord(WORDS[0], canvas)
         animate()
         return () => { if (animRef.current) cancelAnimationFrame(animRef.current) }
     }, [])
 
-    return <canvas ref={canvasRef} className="w-full max-w-3xl" style={{ height: "260px" }} />
+    return <canvas ref={canvasRef} className="w-full max-w-3xl" style={{ height: "auto", minHeight: "180px" }} />
 }
 
 // ─── PAYPAL ──────────────────────────────────────────────────────
@@ -171,25 +173,26 @@ export default function OverOnsPage() {
             <div className="relative z-10">
                 {/* NAV */}
                 <nav className="sticky top-0 z-50 w-full border-b border-white/10 bg-[#0D0D0D]/80 backdrop-blur-md">
-                    <div className="max-w-7xl mx-auto px-6 h-16 flex items-center gap-4">
-                        <button onClick={() => router.push('/')} className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors text-sm font-bold">
+                    <div className="max-w-7xl mx-auto px-4 md:px-6 h-16 flex items-center justify-between">
+                        <button onClick={() => router.push('/')} className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors text-xs md:text-sm font-bold">
                             <ArrowLeft className="w-4 h-4" /> Terug
                         </button>
-                        <div className="flex flex-col items-center gap-2 mt-4 ml-10">
+                        <div className="flex flex-col items-center gap-0 md:gap-2">
                             <Image
                                 src="/images/logo-linguaenlinea-final.png"
                                 alt="Linguaenlinea"
-                                width={200}
-                                height={50}
-                                className="h-24 w-auto object-contain"
+                                width={120}
+                                height={30}
+                                className="h-10 md:h-20 w-auto object-contain"
                             />
-                            <span className="text-[10px] uppercase tracking-widest text-[#D4AF37] font-medium text-center">aprende aprendiendo</span>
+                            <span className="text-[8px] md:text-[10px] uppercase tracking-widest text-[#D4AF37] font-medium text-center">aprende aprendiendo</span>
                         </div>
+                        <div className="w-16 md:hidden"></div> {/* Spacer for balance */}
                     </div>
                 </nav>
 
                 {/* 1 — PARTICLE HERO */}
-                <section className="relative flex flex-col items-center pt-14 pb-2 px-6 overflow-hidden">
+                <section className="relative flex flex-col items-center pt-14 pb-2 px-4 md:px-8 lg:px-16 overflow-hidden">
                     <div className="absolute inset-0 pointer-events-none">
                         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] bg-[#FF6B6B]/5 rounded-full blur-3xl" />
                     </div>
@@ -208,10 +211,10 @@ export default function OverOnsPage() {
 
 
                 {/* 3 — MISSIE */}
-                <section className="py-20 px-6 max-w-6xl mx-auto">
-                    <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="text-center mb-12">
-                        <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-3">Mijn missie</h2>
-                        <p className="text-slate-400 max-w-2xl mx-auto">Spaans leren hoeft niet duur of moeilijk te zijn — als de materialen goed gestructureerd en op een leuke manier worden gepresenteerd.</p>
+                <section className="py-12 md:py-20 px-4 md:px-8 lg:px-16 max-w-7xl mx-auto">
+                    <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="text-center mb-10 md:mb-12">
+                        <h2 className="text-2xl md:text-4xl font-extrabold text-white mb-3">Mijn missie</h2>
+                        <p className="text-slate-400 max-w-2xl mx-auto text-sm md:text-base">Spaans leren hoeft niet duur of moeilijk te zijn — als de materialen goed gestructureerd en op een leuke manier worden gepresenteerd.</p>
                     </motion.div>
                     <div className="grid md:grid-cols-3 gap-6">
                         {pillars.map((pillar, i) => (
@@ -228,19 +231,19 @@ export default function OverOnsPage() {
                 </section>
 
                 {/* 4 — VERHAAL */}
-                <section className="py-8 px-6 max-w-4xl mx-auto">
+                <section className="py-8 px-4 md:px-8 lg:px-16 max-w-5xl mx-auto">
                     <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
-                        className="bg-[#1a1a2e] border border-white/10 rounded-3xl p-10 md:p-14 shadow-2xl relative overflow-hidden">
-                        <div className="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-[#FF6B6B] to-[#FFB800] rounded-l-3xl" />
-                        <div className="pl-4">
-                            <div className="flex items-center gap-3 mb-8">
-                                <Image src="/images/Perfil Rody linkedin.jpg" alt="Rody Figueroa" width={40} height={40} className="w-10 h-10 rounded-full object-cover" />
+                        className="bg-[#1a1a2e] border border-white/10 rounded-3xl p-6 md:p-14 shadow-2xl relative overflow-hidden">
+                        <div className="absolute top-0 left-0 w-1.5 md:w-2 h-full bg-gradient-to-b from-[#FF6B6B] to-[#FFB800] rounded-l-3xl" />
+                        <div className="pl-2 md:pl-4">
+                            <div className="flex items-center gap-3 mb-6 md:mb-8">
+                                <Image src="/images/Perfil Rody linkedin.jpg" alt="Rody Figueroa" width={48} height={48} className="w-12 h-12 rounded-full object-cover border-2 border-primary/20" />
                                 <div>
-                                    <h4 className="text-white font-semibold">Rody Figueroa</h4>
-                                    <p className="text-white/50 text-xs">Oprichter · Born at Da Vinci College · Now for the world 🌎</p>
+                                    <h4 className="text-white font-semibold text-base">Rody Figueroa</h4>
+                                    <p className="text-white/50 text-[10px] md:text-xs">Oprichter · Born at Da Vinci College · Now for the world 🌎</p>
                                 </div>
                             </div>
-                            <div className="space-y-5 text-slate-300 leading-relaxed">
+                            <div className="space-y-4 md:space-y-5 text-slate-300 leading-relaxed text-sm md:text-base">
                                 <p>Hoewel mijn moedertaal Spaans is, ben ik gepassioneerd door talen. Aan de universiteit leerde ik Engels en Frans. Nadat ik naar Nederland verhuisde, leerde ik Nederlands volledig op eigen kracht — vandaar mijn motto: <span className="text-[#FF6B6B] font-bold italic">"aprende aprendiendo"</span>.</p>
                                 <p>Na mijn studie begon ik Engels als vreemde taal te onderwijzen en deed een postdoctorale opleiding in Spaans als vreemde taal. Zo realiseerde ik me dat een taal leren geen gemakkelijke taak is zonder een methode die alle benodigde vaardigheden ontwikkelt.</p>
                                 <p>In 2022 begon ik als Spaans- en Engelsleraar op een middelbare school in Nederland (Da Vinci College). Terwijl ik geschikt materiaal probeerde te ontwikkelen voor het niveau van mijn leerlingen, ontstond het idee van Linguaenlinea.</p>
@@ -251,10 +254,10 @@ export default function OverOnsPage() {
                 </section>
 
                 {/* 5 — DONATIE */}
-                <section className="py-20 px-6 max-w-4xl mx-auto text-center">
-                    <motion.div initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} className="bg-white/5 border border-white/10 p-12 rounded-[3rem] relative overflow-hidden flex flex-col items-center">
+                <section className="py-12 md:py-20 px-4 md:px-8 lg:px-16 max-w-5xl mx-auto text-center">
+                    <motion.div initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} className="bg-white/5 border border-white/10 p-8 md:p-12 rounded-[2rem] md:rounded-[3rem] relative overflow-hidden flex flex-col items-center">
                         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#FF6B6B] to-[#FFB800]" />
-                        <div className="relative w-24 h-24 mb-6">
+                        <div className="relative w-16 h-16 md:w-24 md:h-24 mb-6">
                             <Image
                                 src="/images/icons/3d-coffee.png"
                                 alt="Coffee"
@@ -262,22 +265,22 @@ export default function OverOnsPage() {
                                 className="object-contain"
                             />
                         </div>
-                        <h2 className="text-3xl font-bold text-white mb-4">Buy me a coffee ☕</h2>
-                        <p className="text-white/70 mb-8 max-w-xl mx-auto leading-relaxed text-center">
+                        <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">Buy me a coffee ☕</h2>
+                        <p className="text-white/70 mb-8 max-w-xl mx-auto leading-relaxed text-sm md:text-base text-center">
                             Ik creëer alle inhoud gratis en wijd het grootste deel van mijn vrije tijd aan dit project.
                             Als je het waardeert, is een kleine donatie altijd meer dan welkom!
                         </p>
-                        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full md:w-auto">
                             <a href={PAYPAL_DONATE_URL} target="_blank" rel="noopener noreferrer"
-                                className="bg-[#0070BA] hover:bg-[#005ea6] text-white px-8 py-4 rounded-2xl font-bold transition-all flex items-center gap-3 group">
+                                className="w-full md:w-auto bg-[#0070BA] hover:bg-[#005ea6] text-white px-8 py-4 rounded-2xl font-bold transition-all flex items-center justify-center gap-3 group text-center">
                                 Doneren via PayPal
                             </a>
                         </div>
-                        <p className="mt-8 text-white/40 text-sm flex items-center justify-center gap-2">
+                        <p className="mt-8 text-white/40 text-[10px] md:text-sm flex items-center justify-center gap-2">
                             <Users className="w-4 h-4" />
                             Voor docenten, ouders en iedereen die dit project steunt.
                         </p>
-                        <p className="mt-2 text-white/30 text-xs italic">
+                        <p className="mt-2 text-white/30 text-[9px] md:text-xs italic">
                             Elke bijdrage helpt om dit platform gratis te houden voor alle studenten.
                         </p>
                     </motion.div>

@@ -19,7 +19,8 @@ import {
     TrendingUp,
     Flame,
     Layout,
-    ChevronRight
+    ChevronRight,
+    LogOut
 } from 'lucide-react';
 import StudyLamp from './ui/StudyLamp';
 
@@ -59,6 +60,16 @@ export default function Dashboard() {
 
     const [activeUnitNumber, setActiveUnitNumber] = useState(1);
     const [studentName, setStudentName] = useState('Student');
+
+    const handleLogout = async () => {
+        try {
+            await supabase.auth.signOut();
+            localStorage.clear();
+            router.push('/landing');
+        } catch (error) {
+            console.error('Error logging out:', error);
+        }
+    };
 
     useEffect(() => {
         setMounted(true);
@@ -228,7 +239,7 @@ export default function Dashboard() {
                     })}
                 </div>
 
-                <div className="mt-auto pt-6 border-t border-slate-800/50">
+                <div className="mt-auto pt-6 border-t border-slate-800/50 space-y-3">
                     <div className="flex items-center gap-3 px-3 py-2 rounded-xl bg-accent-gold/10 border border-accent-gold/20">
                         <Trophy className="text-accent-gold w-5 h-5" />
                         <div>
@@ -236,6 +247,14 @@ export default function Dashboard() {
                             <p className="text-slate-100 font-bold">{xp.toLocaleString()} XP</p>
                         </div>
                     </div>
+
+                    <button 
+                        onClick={handleLogout}
+                        className="flex items-center gap-3 w-full px-4 py-2 mt-2 text-slate-400 hover:text-white hover:bg-primary/10 rounded-xl transition-all group"
+                    >
+                        <LogOut className="w-4 h-4 text-primary group-hover:scale-110 transition-transform" />
+                        <span className="text-sm font-bold">Uitloggen</span>
+                    </button>
                 </div>
             </aside>
 

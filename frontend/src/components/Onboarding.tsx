@@ -163,6 +163,9 @@ export default function Onboarding({ onComplete }: { onComplete: () => void }) {
                 }
             });
 
+            console.log("SignUp response data:", authData);
+            console.log("SignUp response error:", signUpError ? JSON.stringify(signUpError, Object.getOwnPropertyNames(signUpError), 2) : "None");
+
             if (signUpError) throw signUpError;
 
             if (authData.user) {
@@ -210,8 +213,18 @@ export default function Onboarding({ onComplete }: { onComplete: () => void }) {
                 onComplete();
             }
         } catch (e: any) {
-            console.error("Error creating account:", e);
-            setAuthError(e.message || "Er is een fout opgetreden bij het aanmaken van je account.");
+            console.error("Error creating account DIAGNOSTIC START");
+            console.error("Type of error:", typeof e);
+            console.error("Error instance of AuthError:", e instanceof Error);
+            console.error("Error FULL (Stringify):", JSON.stringify(e, Object.getOwnPropertyNames(e), 2));
+            console.error("Raw Error:", e);
+            console.error("Error message:", e?.message);
+            console.error("Error status:", e?.status);
+            console.error("Error details:", e?.error_description || e?.details);
+            console.error("Error code:", e?.code);
+            console.error("Error DIAGNOSTIC END");
+            
+            setAuthError(e.message || e?.error_description || e?.details || "Er is een fout opgetreden bij het aanmaken van je account.");
         } finally {
             setIsSubmitting(false);
         }

@@ -1,5 +1,5 @@
 # Project Session History
-**Total accumulated time: 28 h 14 m**
+**Total accumulated time: 29 h 15 m**
 
 ## Session: 2026-03-12 (Part 3)
 - **Time**: 08:32 - 10:32 (2 h 0 m)
@@ -9,6 +9,11 @@
   * feat: Mobile-first drawer and bottom navigation for Dashboard
   * fix: Contact page syntax error and Dashboard pathname hook
   * build: 100% success on typecheck (npx tsc)
+  * chore: fix git tracking and deploy production (v3)
+  * fix: Supabase RLS policies for profiles table (INSERT/SELECT/UPDATE)
+  * debug: Enhanced Supabase Auth logging in Onboarding.tsx
+  * fix: Login/Onboarding infinite redirect loops (window.location fix)
+  * fix: Middleware session cookie persistence in redirects
 
 ## Session: 2026-03-12 (Part 2)
 - **Time**: 07:32 - 08:32 (1 h 0 m)

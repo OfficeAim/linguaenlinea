@@ -70,9 +70,9 @@ export default function LoginPage() {
         .single();
 
       if (profile && profile.onboarding_results) {
-        router.push('/dashboard');
+        window.location.href = '/dashboard';
       } else {
-        router.push('/onboarding');
+        window.location.href = '/onboarding';
       }
     }
   };

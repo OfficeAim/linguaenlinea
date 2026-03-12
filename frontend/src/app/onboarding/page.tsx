@@ -29,7 +29,7 @@ export default function OnboardingPage() {
     };
 
     const handleAnimationComplete = () => {
-        router.push('/dashboard');
+        window.location.href = '/dashboard';
     };
 
     if (status === 'generating') {

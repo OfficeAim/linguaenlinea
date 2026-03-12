@@ -65,14 +65,28 @@ export async function middleware(request: NextRequest) {
   if ((isDashboardPage || isLessonPage) && !user) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
-    return NextResponse.redirect(url)
+    const redirectResponse = NextResponse.redirect(url)
+    
+    // Copy cookies from the modified response to the redirect response
+    response.cookies.getAll().forEach((cookie) => {
+      redirectResponse.cookies.set(cookie.name, cookie.value)
+    })
+    
+    return redirectResponse
   }
 
   // Redirect to dashboard if accessing login with active session
   if (isAuthPage && user) {
     const url = request.nextUrl.clone()
     url.pathname = '/dashboard'
-    return NextResponse.redirect(url)
+    const redirectResponse = NextResponse.redirect(url)
+    
+    // Copy cookies from the modified response to the redirect response
+    response.cookies.getAll().forEach((cookie) => {
+      redirectResponse.cookies.set(cookie.name, cookie.value)
+    })
+    
+    return redirectResponse
   }
 
   return response

@@ -128,3 +128,29 @@
   3. UI Polish: Updated hero text sizes (text-3xl mobile / text-6xl desktop), adjusted grid layouts to stack vertically on mobile, and refined logo scaling for small screens.
   4. Bug Fixes: Removed syntax errors in Contact page and replaced `useRouter().pathname` with `usePathname()` in Dashboard.
   5. Verification: Verified 100% build success via `npx tsc --noEmit`. Layouts confirmed consistent across breakpoints (375px, 768px, 1280px+).
+
+- **Log 2026-03-12 (08:20)**: [MICRO] Git & Deploy Fix.
+  1. Verified `node_modules` were not currently being tracked.
+  2. Created/Updated root `.gitignore` to include `node_modules/` and `frontend/node_modules/`.
+  3. Committed all outstanding changes and pushed to `main`.
+  4. Successfully deployed to Vercel Production: https://frontend-ten-sigma-k640vdpn7m.vercel.app
+
+- **Log 2026-03-12 (08:25)**: [MICRO] Supabase RLS Fix.
+  1. Identified "new row violates row-level security policy" error during onboarding/registration.
+  2. Executed SQL in Supabase project `ollnssdpdevcumwxbkuw` to enable RLS on `profiles` table and create correct policies for self-access (INSERT, SELECT, UPDATE based on `auth.uid() = id`).
+
+- **Log 2026-03-12 (08:31)**: [MICRO] Debugging Auth.
+  1. Enhanced handleCreateAccount in Onboarding.tsx with detailed console logs for Supabase signUp response (data and error).
+  2. Improved catch block to log full error object, message, status, and details for easier troubleshooting of registration issues.
+
+- **Log 2026-03-12 (08:40)**: [MICRO] Auth Debugging (Profiles RLS & SignUp silience).
+  1. Identified that `signUp` errors were logging as empty objects `{}` due to Error instance serialization issues. Enhanced `Onboarding.tsx` with `Object.getOwnPropertyNames` for exhaustive error logging.
+  2. Confirmed that `confirmed_at` is NULL for existing users, suggesting Email Confirmation is enabled in Supabase. This blocks RLS `auth.uid()` from functioning during the `insert` to profiles.
+  3. Manually confirmed user `rodyf81@yahoo.es` in SQL; subsequent test needed via login.
+  4. Updated `.env.local` keys to match Supabase project `ollnssdpdevcumwxbkuw`.
+  5. Instructed user to disable "Confirm email" in Supabase dashboard to unblock registration flow.
+
+- **Log 2026-03-12 (09:25)**: [MICRO] Login Infinite Loop & Session Fix.
+  1. Replaced `router.push` with `window.location.href` in `login/page.tsx` and `onboarding/page.tsx` to solve infinite loading and CORB blocks.
+  2. Fixed `middleware.ts` cookie persistence: now correctly copying session cookies from the initial response to the redirect response objects. This prevents session loss during redirects between `/login` and `/dashboard`.
+  3. Verified non-existence of redundant `router.refresh()` calls that could cause loops.

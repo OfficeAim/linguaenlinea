@@ -20,14 +20,19 @@ interface FAQCategoryProps {
     activeColor: string;
 }
 
-const FAQCategory = ({ title, icon, items, borderColor, activeColor }: FAQCategoryProps) => {
+const FAQCategory = ({ title, iconSrc, items, borderColor, activeColor }: { title: string, iconSrc: string, items: FAQItem[], borderColor: string, activeColor: string }) => {
     const [openIndex, setOpenIndex] = useState<number | null>(null);
 
     return (
         <section className={`bg-white/5 border-l-4 ${borderColor} p-8 rounded-3xl space-y-6`}>
             <div className="flex items-center gap-4 mb-6">
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center bg-white/5`}>
-                    {icon}
+                <div className={`w-14 h-14 rounded-xl flex items-center justify-center bg-white/5 relative`}>
+                    <Image
+                        src={iconSrc}
+                        alt={title}
+                        fill
+                        className="object-contain p-1"
+                    />
                 </div>
                 <h2 className="text-2xl md:text-3xl font-black text-white">{title}</h2>
             </div>
@@ -76,7 +81,7 @@ export default function FAQPage() {
     const categories = [
         {
             title: "Voor ouders",
-            icon: <Users className="w-6 h-6 text-primary" />,
+            iconSrc: "/images/icons/3d-parents.png",
             borderColor: "border-primary",
             activeColor: "text-primary",
             items: [
@@ -100,7 +105,7 @@ export default function FAQPage() {
         },
         {
             title: "Voor leerlingen",
-            icon: <GraduationCap className="w-6 h-6 text-accent-gold" />,
+            iconSrc: "/images/icons/3d-students.png",
             borderColor: "border-accent-gold",
             activeColor: "text-accent-gold",
             items: [
@@ -128,7 +133,7 @@ export default function FAQPage() {
         },
         {
             title: "Voor leraren",
-            icon: <School className="w-6 h-6 text-blue-500" />,
+            iconSrc: "/images/icons/3d-teachers.png",
             borderColor: "border-blue-500",
             activeColor: "text-blue-500",
             items: [

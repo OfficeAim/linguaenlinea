@@ -252,26 +252,33 @@ export default function OverOnsPage() {
 
                 {/* 5 — DONATIE */}
                 <section className="py-20 px-6 max-w-4xl mx-auto text-center">
-                    <motion.div initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} className="bg-white/5 border border-white/10 p-12 rounded-[3rem] relative overflow-hidden">
+                    <motion.div initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} className="bg-white/5 border border-white/10 p-12 rounded-[3rem] relative overflow-hidden flex flex-col items-center">
                         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#FF6B6B] to-[#FFB800]" />
-                        <Heart className="w-12 h-12 text-[#FF6B6B] mx-auto mb-6" />
-                        <h2 className="text-3xl font-bold text-white mb-4">Buy me a coffee</h2>
-                        <p className="text-white/70 mb-8 max-w-xl mx-auto leading-relaxed">
-                            I create all content for free and dedicate most of my free time to this project.
-                            If you appreciate it, a small donation is always more than welcome!
+                        <div className="relative w-24 h-24 mb-6">
+                            <Image
+                                src="/images/icons/3d-coffee.png"
+                                alt="Coffee"
+                                fill
+                                className="object-contain"
+                            />
+                        </div>
+                        <h2 className="text-3xl font-bold text-white mb-4">Buy me a coffee ☕</h2>
+                        <p className="text-white/70 mb-8 max-w-xl mx-auto leading-relaxed text-center">
+                            Ik creëer alle inhoud gratis en wijd het grootste deel van mijn vrije tijd aan dit project.
+                            Als je het waardeert, is een kleine donatie altijd meer dan welkom!
                         </p>
                         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                             <a href={PAYPAL_DONATE_URL} target="_blank" rel="noopener noreferrer"
                                 className="bg-[#0070BA] hover:bg-[#005ea6] text-white px-8 py-4 rounded-2xl font-bold transition-all flex items-center gap-3 group">
-                                Donate via PayPal
+                                Doneren via PayPal
                             </a>
                         </div>
                         <p className="mt-8 text-white/40 text-sm flex items-center justify-center gap-2">
                             <Users className="w-4 h-4" />
-                            For teachers, parents and everyone who supports this project.
+                            Voor docenten, ouders en iedereen die dit project steunt.
                         </p>
                         <p className="mt-2 text-white/30 text-xs italic">
-                            Every contribution helps keep this platform free for all students.
+                            Elke bijdrage helpt om dit platform gratis te houden voor alle studenten.
                         </p>
                     </motion.div>
                 </section>

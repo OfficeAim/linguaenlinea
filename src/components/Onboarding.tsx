@@ -7,74 +7,79 @@ import { ChevronRight, Check } from 'lucide-react';
 const QUESTIONS = [
     {
         id: "name",
-        title: "What is your name?",
+        title: "Wat is je naam?",
         type: "text",
-        placeholder: "Enter your name..."
+        placeholder: "Vul je naam in..."
     },
     {
         id: "track",
-        title: "What brings you to Linguaenlinea?",
+        title: "Wat brengt je bij Linguaenlinea?",
         options: [
-            { id: "dutch", label: "🎓 I need to pass my Dutch school exams (Dutch Track)" },
-            { id: "open", label: "🌍 I just want to learn Spanish my way (Open Track)" }
+            { id: "dutch", label: "🎓 Ik wil slagen voor mijn examens (Dutch Track)" },
+            { id: "open", label: "🌍 Ik wil Spaans leren op mijn eigen manier (Open Track)" }
         ]
     },
     {
         id: "l1",
-        title: "What is your first language?",
+        title: "Wat is je moedertaal?",
         options: [
-            { id: "nl", label: "🇳🇱 Dutch" },
-            { id: "en", label: "🇬🇧 English" },
+            { id: "nl-nl", label: "🇳🇱 Nederlands (Nederland)" },
+            { id: "nl-be", label: "🇧🇪 Nederlands (België)" },
+            { id: "en-us", label: "🇺🇸 English (USA)" },
+            { id: "en-gb", label: "🇬🇧 English (UK)" },
+            { id: "en-ca", label: "🇨🇦 English (Canada)" },
+            { id: "de", label: "🇩🇪 Deutsch" },
+            { id: "fr", label: "🇫🇷 Français" },
             { id: "ar", label: "🇲🇦 Arabic" },
             { id: "tr", label: "🇹🇷 Turkish" },
             { id: "sr", label: "🇸🇷 Sranan / Papiamento" },
-            { id: "other", label: "🌐 Other (specify)" }
+            { id: "other", label: "🌐 Anders" }
         ]
     },
     {
         id: "spanish_level",
-        title: "How much Spanish do you already know?",
+        title: "Hoeveel Spaans ken je al?",
         options: [
-            { id: "zero", label: "Zero — I've never studied Spanish" },
-            { id: "beginner", label: "Beginner — I know a few words" },
-            { id: "elementary", label: "Elementary — I can introduce myself" },
-            { id: "pre-intermediate", label: "Pre-intermediate — I can have simple conversations" }
+            { id: "zero", label: "Nul — Ik heb nog nooit Spaans geleerd" },
+            { id: "beginner", label: "Beginner — Ik ken een paar woorden" },
+            { id: "elementary", label: "Basis — Ik kan mezelf voorstellen" },
+            { id: "pre-intermediate", label: "Gemiddeld — Ik kan simpele gesprekken voeren" }
         ]
     },
     {
         id: "interests",
-        title: "What topics excite you most? (Choose up to 3)",
+        title: "Welke onderwerpen interesseren je? (Kies er maximaal 3)",
         type: "multiselect",
         max: 3,
         options: [
-            { id: "music", label: "🎵 Music (salsa, reggaeton)" },
-            { id: "sports", label: "⚽ Sports (football, athletics)" },
-            { id: "food", label: "🍕 Food & Cooking" },
-            { id: "travel", label: "✈️ Travel & Adventure" },
-            { id: "gaming", label: "🎮 Gaming & Technology" },
+            { id: "music", label: "🎵 Muziek (salsa, reggaeton)" },
+            { id: "sports", label: "⚽ Sport (voetbal, atletiek)" },
+            { id: "food", label: "🍕 Eten & Koken" },
+            { id: "travel", label: "✈️ Reizen & Avontuur" },
+            { id: "gaming", label: "🎮 Gamen & Technologie" },
             { id: "film", label: "🎬 Film & Series" },
-            { id: "history", label: "📚 History & Culture" },
-            { id: "business", label: "💼 Business & Work" },
-            { id: "art", label: "🎨 Art & Design" }
+            { id: "history", label: "📚 Geschiedenis & Cultuur" },
+            { id: "business", label: "💼 Zakelijk & Werk" },
+            { id: "art", label: "🎨 Kunst & Design" }
         ]
     },
     {
         id: "daily_minutes",
-        title: "How much time can you spend each day?",
+        title: "Hoeveel tijd kun je per dag besteden?",
         options: [
-            { id: "10", label: "⚡ 10 minutes (micro-learning)" },
-            { id: "30", label: "📖 30 minutes (standard)" },
-            { id: "60", label: "🚀 60 minutes (intensive)" }
+            { id: "10", label: "⚡ 10 minuten (micro-learning)" },
+            { id: "30", label: "📖 30 minuten (standaard)" },
+            { id: "60", label: "🚀 60 minuten (intensief)" }
         ]
     },
     {
         id: "learning_style",
-        title: "How do you learn best?",
+        title: "Hoe leer je het best?",
         options: [
-            { id: "listening", label: "👂 Listening and repeating" },
-            { id: "reading", label: "📝 Reading and writing" },
-            { id: "speaking", label: "🗣️ Speaking and conversation" },
-            { id: "games", label: "🎯 Games and challenges" }
+            { id: "listening", label: "👂 Luisteren en herhalen" },
+            { id: "reading", label: "📝 Lezen en schrijven" },
+            { id: "speaking", label: "🗣️ Spreken en conversatie" },
+            { id: "games", label: "🎯 Games en uitdagings" }
         ]
     }
 ];
@@ -115,6 +120,7 @@ export default function Onboarding({ onComplete }: { onComplete: () => void }) {
                 localStorage.setItem('student_id', studentId);
                 localStorage.setItem('student_name', studentName);
                 localStorage.setItem('student_track', studentTrack);
+                localStorage.setItem('student_level', answers.spanish_level || "zero");
                 localStorage.setItem('onboarding_complete', 'true');
                 localStorage.setItem('linguaenlinea_xp', '0');
 
@@ -151,8 +157,8 @@ export default function Onboarding({ onComplete }: { onComplete: () => void }) {
 
                 <h1 className="text-3xl font-bold text-white mb-2">{currentQ.title}</h1>
                 <p className="text-gray-400 mb-8">
-                    Question {step + 1} of {QUESTIONS.length}
-                    {currentQ.type === 'multiselect' && ` (Choose up to ${currentQ.max})`}
+                    Vraag {step + 1} van {QUESTIONS.length}
+                    {currentQ.type === 'multiselect' && ` (Kies er maximaal ${currentQ.max})`}
                 </p>
 
                 <div className="space-y-4">
@@ -193,7 +199,7 @@ export default function Onboarding({ onComplete }: { onComplete: () => void }) {
                         onClick={() => setStep(Math.max(0, step - 1))}
                         className={`px-6 py-3 text-gray-400 hover:text-white transition-colors ${step === 0 ? 'invisible' : ''}`}
                     >
-                        Back
+                        Vorige
                     </button>
 
                     {(currentQ.type === 'multiselect' || currentQ.type === 'text' || step === QUESTIONS.length - 1) && (
@@ -202,7 +208,7 @@ export default function Onboarding({ onComplete }: { onComplete: () => void }) {
                             disabled={!isCurrentSelectionValid() || isSubmitting}
                             className="px-8 py-3 bg-brand-coral hover:bg-brand-coral-hover text-white rounded-xl font-bold transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            {isSubmitting ? 'Saving...' : step === QUESTIONS.length - 1 ? 'Finish' : 'Next'}
+                            {isSubmitting ? 'Opslaan...' : step === QUESTIONS.length - 1 ? 'Afronden' : 'Volgende'}
                             {!isSubmitting && <ChevronRight className="w-5 h-5" />}
                         </button>
                     )}

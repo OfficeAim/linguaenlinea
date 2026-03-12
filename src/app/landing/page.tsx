@@ -110,7 +110,7 @@ export default function LandingPage() {
                         🇳🇱 Speciaal voor Nederlandse scholieren
                     </div>
                     <h1 className="text-5xl md:text-7xl font-extrabold leading-[1.1] tracking-tight text-white font-display">
-                        Leer Spaans. <span className="text-primary">Gratis.</span><br />In 10 minuten.
+                        Leer Spaans. <span className="text-primary">Gratis.</span><br />In 10 minuten per dag.
                     </h1>
                     <p className="text-lg md:text-xl text-slate-400 max-w-2xl leading-relaxed">
                         Echte audio-activiteiten + AI-uitleg op maat voor het Nederlandse schoolprogramma.
@@ -245,18 +245,42 @@ export default function LandingPage() {
                 <div className="max-w-6xl mx-auto">
                     <h2 className="text-3xl font-extrabold text-white mb-6 text-center">Zo ziet een les eruit</h2>
                     <div className="grid md:grid-cols-3 gap-8">
-                        <div className="bg-card-dark p-8 rounded-2xl border border-white/5 hover:border-primary/30 transition-colors">
-                            <div className="text-primary font-black text-4xl mb-4 font-display">1</div>
+                        <div className="bg-card-dark p-8 rounded-2xl border border-white/5 hover:border-primary/30 transition-all hover:scale-[1.02] flex flex-col items-center text-center">
+                            <div className="relative w-24 h-24 mb-6">
+                                <Image
+                                    src="/images/icons/3d-book.png"
+                                    alt="Zelfstudie"
+                                    fill
+                                    className="object-contain"
+                                />
+                            </div>
+                            <div className="text-primary font-black text-2xl mb-2 font-display">Zelfstudie</div>
                             <h4 className="text-xl font-bold text-white mb-2 uppercase tracking-tight">Understand</h4>
                             <p className="text-slate-400 text-sm font-display">Focus op woordenschat, grammatica en je specifieke leerdoel voor deze sessie.</p>
                         </div>
-                        <div className="bg-card-dark p-8 rounded-2xl border border-white/5 hover:border-primary/30 transition-colors">
-                            <div className="text-primary font-black text-4xl mb-4 font-display">2</div>
+                        <div className="bg-card-dark p-8 rounded-2xl border border-white/5 hover:border-primary/30 transition-all hover:scale-[1.02] flex flex-col items-center text-center">
+                            <div className="relative w-24 h-24 mb-6">
+                                <Image
+                                    src="/images/icons/3d-mic.png"
+                                    alt="Oefening"
+                                    fill
+                                    className="object-contain"
+                                />
+                            </div>
+                            <div className="text-primary font-black text-2xl mb-2 font-display">Oefening</div>
                             <h4 className="text-xl font-bold text-white mb-2 uppercase tracking-tight">Explore + Practice</h4>
                             <p className="text-slate-400 text-sm font-display">Luister naar audio, vul woorden in en maak interactieve oefeningen die direct feedback geven.</p>
                         </div>
-                        <div className="bg-card-dark p-8 rounded-2xl border border-white/5 hover:border-primary/30 transition-colors">
-                            <div className="text-primary font-black text-4xl mb-4 font-display">3</div>
+                        <div className="bg-card-dark p-8 rounded-2xl border border-white/5 hover:border-primary/30 transition-all hover:scale-[1.02] flex flex-col items-center text-center">
+                            <div className="relative w-24 h-24 mb-6">
+                                <Image
+                                    src="/images/icons/3d-community.png"
+                                    alt="Community"
+                                    fill
+                                    className="object-contain"
+                                />
+                            </div>
+                            <div className="text-primary font-black text-2xl mb-2 font-display">Community</div>
                             <h4 className="text-xl font-bold text-white mb-2 uppercase tracking-tight">Communicate</h4>
                             <p className="text-slate-400 text-sm font-display">Rond af met een quiz, verdien je achievements en deel je voortgang met de community.</p>
                         </div>

@@ -38,7 +38,7 @@ export default function GeneratingCourse({
                 }
                 return prev + 1;
             });
-        }, 700);
+        }, 1200);
         return () => clearInterval(interval);
     }, [onComplete]);
 

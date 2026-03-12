@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { Heart, BookOpen, Mic, Users, ArrowLeft, Star, Zap } from "lucide-react";
+import { Heart, BookOpen, Mic, Users, ArrowLeft, Star, Zap, Coffee } from "lucide-react";
 import Image from "next/image";
 import { DotPattern } from "@/components/ui/dot-pattern";
 
@@ -257,14 +257,7 @@ export default function OverOnsPage() {
                 <section className="py-12 md:py-20 px-4 md:px-8 lg:px-16 max-w-5xl mx-auto text-center">
                     <motion.div initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} className="bg-white/5 border border-white/10 p-8 md:p-12 rounded-[2rem] md:rounded-[3rem] relative overflow-hidden flex flex-col items-center">
                         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#FF6B6B] to-[#FFB800]" />
-                        <div className="relative w-16 h-16 md:w-24 md:h-24 mb-6">
-                            <Image
-                                src="/images/icons/3d-coffee.png"
-                                alt="Coffee"
-                                fill
-                                className="object-contain"
-                            />
-                        </div>
+                        <Coffee size={80} className="text-[#e63946] mb-6" />
                         <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">Buy me a coffee ☕</h2>
                         <p className="text-white/70 mb-8 max-w-xl mx-auto leading-relaxed text-sm md:text-base text-center">
                             Ik creëer alle inhoud gratis en wijd het grootste deel van mijn vrije tijd aan dit project.

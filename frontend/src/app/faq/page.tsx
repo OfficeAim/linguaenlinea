@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
-import { ArrowLeft, Plus, Minus, Users, GraduationCap, School } from "lucide-react";
+import { ArrowLeft, Plus, Minus, Users, GraduationCap, School, Heart, BookOpen, Coffee } from "lucide-react";
 import { DotPattern } from "@/components/ui/dot-pattern";
 
 interface FAQItem {
@@ -20,19 +20,14 @@ interface FAQCategoryProps {
     activeColor: string;
 }
 
-const FAQCategory = ({ title, iconSrc, items, borderColor, activeColor }: { title: string, iconSrc: string, items: FAQItem[], borderColor: string, activeColor: string }) => {
+const FAQCategory = ({ title, icon: Icon, items, borderColor, activeColor }: { title: string, icon: any, items: FAQItem[], borderColor: string, activeColor: string }) => {
     const [openIndex, setOpenIndex] = useState<number | null>(null);
 
     return (
         <section className={`bg-white/5 border-l-4 ${borderColor} p-6 md:p-8 rounded-3xl space-y-6`}>
             <div className="flex items-center gap-4 mb-4 md:mb-6">
                 <div className={`w-12 h-12 md:w-14 md:h-14 rounded-xl flex items-center justify-center bg-white/5 relative shrink-0`}>
-                    <Image
-                        src={iconSrc}
-                        alt={title}
-                        fill
-                        className="object-contain p-1"
-                    />
+                    <Icon size={32} className="text-[#e63946]" />
                 </div>
                 <h2 className="text-xl md:text-3xl font-black text-white">{title}</h2>
             </div>
@@ -81,7 +76,7 @@ export default function FAQPage() {
     const categories = [
         {
             title: "Voor ouders",
-            iconSrc: "/images/icons/3d-parents.png",
+            icon: Heart,
             borderColor: "border-primary",
             activeColor: "text-primary",
             items: [
@@ -105,7 +100,7 @@ export default function FAQPage() {
         },
         {
             title: "Voor leerlingen",
-            iconSrc: "/images/icons/3d-students.png",
+            icon: GraduationCap,
             borderColor: "border-accent-gold",
             activeColor: "text-accent-gold",
             items: [
@@ -133,7 +128,7 @@ export default function FAQPage() {
         },
         {
             title: "Voor leraren",
-            iconSrc: "/images/icons/3d-teachers.png",
+            icon: School,
             borderColor: "border-blue-500",
             activeColor: "text-blue-500",
             items: [

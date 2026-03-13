@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/utils/supabase/client';
 import {
     BookOpen,
     Lock,
@@ -58,6 +58,7 @@ const ICON_MAP: Record<string, any> = {
 
 export default function Dashboard() {
     const router = useRouter();
+    const supabase = createClient();
     const pathname = usePathname();
     const [lessons, setLessons] = useState<EnrichedLesson[]>([]);
     const [loading, setLoading] = useState(true);

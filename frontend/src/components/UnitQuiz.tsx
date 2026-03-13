@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/utils/supabase/client';
 import { X, CheckCircle, XCircle, Target } from 'lucide-react';
 
 interface Question {
@@ -30,6 +30,8 @@ interface UnitQuizProps {
 }
 
 export default function UnitQuiz({ lessonId, lessonOrder, lessonTitle, studentId, onClose, onShowAchievement }: UnitQuizProps) {
+    const supabase = createClient();
+
     const [screen, setScreen] = useState<'intro' | 'questions' | 'results'>('intro');
     const [quiz, setQuiz] = useState<Quiz | null>(null);
     const [loading, setLoading] = useState(true);

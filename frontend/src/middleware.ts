@@ -1,61 +1,37 @@
-import { createServerClient, type CookieOptions } from '@supabase/ssr'
+import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
-  let response = NextResponse.next({
-    request: {
-      headers: request.headers,
-    },
+  let supabaseResponse = NextResponse.next({
+    request,
   })
 
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://ollnssdpdevcumwxbkuw.supabase.co',
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9sbG5zc2RwZGV2Y3Vtd3hia3V3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4MDM3NjcsImV4cCI6MjA4ODM3OTc2N30.VdN_lTH-O5x-9we9-bxlYKK8twGBhTt8ARSFf4A_Cto',
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        get(name: string) {
-          return request.cookies.get(name)?.value
+        getAll() {
+          return request.cookies.getAll()
         },
-        set(name: string, value: string, options: CookieOptions) {
-          request.cookies.set({
-            name,
-            value,
-            ...options,
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) => request.cookies.set(name, value))
+          supabaseResponse = NextResponse.next({
+            request,
           })
-          response = NextResponse.next({
-            request: {
-              headers: request.headers,
-            },
-          })
-          response.cookies.set({
-            name,
-            value,
-            ...options,
-          })
-        },
-        remove(name: string, options: CookieOptions) {
-          request.cookies.set({
-            name,
-            value: '',
-            ...options,
-          })
-          response = NextResponse.next({
-            request: {
-              headers: request.headers,
-            },
-          })
-          response.cookies.set({
-            name,
-            value: '',
-            ...options,
-          })
+          cookiesToSet.forEach(({ name, value, options }) =>
+            supabaseResponse.cookies.set(name, value, options)
+          )
         },
       },
     }
   )
 
-  // refresh session if expired - required for Server Components
-  const { data: { user } } = await supabase.auth.getUser()
+  // IMPORTANT: Avoid writing any logic between createServerClient and
+  // getUser(). A simple mistake can make it very hard to debug issues with redirections.
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
 
   const isAuthPage = request.nextUrl.pathname.startsWith('/login')
   const isDashboardPage = request.nextUrl.pathname.startsWith('/dashboard')
@@ -63,35 +39,30 @@ export async function middleware(request: NextRequest) {
 
   console.log(`Middleware Path: ${request.nextUrl.pathname} | User: ${user?.email || 'Guest'}`);
 
-  // Redirect to login if accessing protected route without session
-  if ((isDashboardPage || isLessonPage) && !user) {
+  // 1. Unauthenticated users: redirect to login if accessing protected routes
+  if (!user && (isDashboardPage || isLessonPage)) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
     const redirectResponse = NextResponse.redirect(url)
-    
-    // Copy cookies from the modified response to the redirect response
-    response.cookies.getAll().forEach((cookie) => {
+    // Copy cookies to ensures session state is preserved even during redirect
+    supabaseResponse.cookies.getAll().forEach((cookie) => {
       redirectResponse.cookies.set(cookie.name, cookie.value)
     })
-    
     return redirectResponse
   }
 
-  // Redirect to dashboard if accessing login with active session
-  if (isAuthPage && user) {
+  // 2. Authenticated users: redirect to dashboard if accessing login
+  if (user && isAuthPage) {
     const url = request.nextUrl.clone()
     url.pathname = '/dashboard'
     const redirectResponse = NextResponse.redirect(url)
-    
-    // Copy cookies from the modified response to the redirect response
-    response.cookies.getAll().forEach((cookie) => {
+    supabaseResponse.cookies.getAll().forEach((cookie) => {
       redirectResponse.cookies.set(cookie.name, cookie.value)
     })
-    
     return redirectResponse
   }
 
-  return response
+  return supabaseResponse
 }
 
 export const config = {
@@ -102,7 +73,6 @@ export const config = {
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      * - images (project images)
-     * Feel free to modify this pattern to include more paths.
      */
     '/((?!_next/static|_next/image|favicon.ico|images|api).*)',
   ],

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/utils/supabase/client';
 import { ChevronRight, Check } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
@@ -87,6 +87,7 @@ const QUESTIONS = [
 ];
 
 export default function Onboarding({ onComplete }: { onComplete: () => void }) {
+    const supabase = createClient();
     const [step, setStep] = useState(0);
     const [answers, setAnswers] = useState<Record<string, any>>({ interests: [] });
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -179,7 +180,7 @@ export default function Onboarding({ onComplete }: { onComplete: () => void }) {
                 // 2. Create Profile
                 const { error: profileError } = await supabase
                     .from('profiles')
-                    .insert({
+                    .upsert({
                         id: authData.user.id,
                         l1: answers.l1,
                         track: answers.track,
@@ -193,7 +194,7 @@ export default function Onboarding({ onComplete }: { onComplete: () => void }) {
                         xp: 0,
                         energy: 5,
                         streak: 0
-                    });
+                    }, { onConflict: 'id' });
 
                 if (profileError) throw profileError;
 
@@ -241,7 +242,7 @@ export default function Onboarding({ onComplete }: { onComplete: () => void }) {
         const { error } = await supabase.auth.signInWithOAuth({
             provider: 'google',
             options: {
-                redirectTo: `${window.location.origin}/dashboard`
+                redirectTo: `${window.location.origin}/auth/callback`
             }
         });
         if (error) setAuthError(error.message);

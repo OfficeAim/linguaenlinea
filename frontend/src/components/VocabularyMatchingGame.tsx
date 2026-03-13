@@ -2,20 +2,24 @@
 
 import { useState, useEffect, Fragment } from 'react';
 import { Target, CheckCircle, ArrowRight } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface VocabularyItem {
     es: string;
     nl: string;
-    ex?: string;
 }
 
 interface VocabularyMatchingGameProps {
-    items: VocabularyItem[];
+    items: { spanish: string; dutch: string }[] | { es: string; nl: string }[];
     onComplete?: () => void;
 }
 
 export default function VocabularyMatchingGame({ items, onComplete }: VocabularyMatchingGameProps) {
-    const gameItems = items.slice(0, 6);
+    // Normalize items to { es, nl }
+    const normalizedItems: VocabularyItem[] = (items || []).map(item => ({
+        es: 'spanish' in item ? item.spanish : item.es,
+        nl: 'dutch' in item ? item.dutch : item.nl
+    })).slice(0, 6);
 
     const [leftCards, setLeftCards] = useState<{ id: string, text: string }[]>([]);
     const [rightCards, setRightCards] = useState<{ id: string, text: string }[]>([]);
@@ -27,11 +31,10 @@ export default function VocabularyMatchingGame({ items, onComplete }: Vocabulary
     const [isError, setIsError] = useState(false);
 
     useEffect(() => {
-        const left = gameItems.map((item, idx) => ({ id: `pair-${idx}`, text: item.es }));
+        const left = normalizedItems.map((item, idx) => ({ id: `pair-${idx}`, text: item.es }));
+        const rightInitial = normalizedItems.map((item, idx) => ({ id: `pair-${idx}`, text: item.nl }));
 
-        const rightInitial = gameItems.map((item, idx) => ({ id: `pair-${idx}`, text: item.nl }));
-
-        const shuffleArray = (array: { id: string, text: string }[]) => {
+        const shuffleArray = (array: any[]) => {
             const shuffled = [...array];
             for (let i = shuffled.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -40,10 +43,8 @@ export default function VocabularyMatchingGame({ items, onComplete }: Vocabulary
             return shuffled;
         };
 
-        const right = shuffleArray(rightInitial);
-
         setLeftCards(left);
-        setRightCards(right);
+        setRightCards(shuffleArray(rightInitial));
     }, [items]);
 
     useEffect(() => {
@@ -64,84 +65,119 @@ export default function VocabularyMatchingGame({ items, onComplete }: Vocabulary
                     setIsError(false);
                     setSelectedLeft(null);
                     setSelectedRight(null);
-                }, 800);
+                }, 600);
             }
         }
     }, [selectedLeft, selectedRight]);
 
-    const isComplete = matchedIds.size === gameItems.length && gameItems.length > 0;
+    const isComplete = matchedIds.size === normalizedItems.length && normalizedItems.length > 0;
 
     return (
-        <div className="w-full">
-            <div className="grid grid-cols-2 gap-3 items-center">
-                {leftCards.map((lCard, index) => {
-                    const rCard = rightCards[index];
-                    if (!lCard || !rCard) return null;
-
-                    const lIsMatched = matchedIds.has(lCard.id);
-                    const lIsSelected = selectedLeft === lCard.id;
-                    const lErrorClass = lIsSelected && isError ? 'animate-[shake_0.4s_ease-in-out] bg-red-900/50 border-red-500' : '';
-
-                    const rIsMatched = matchedIds.has(rCard.id);
-                    const rIsSelected = selectedRight === rCard.id;
-                    const rErrorClass = rIsSelected && isError ? 'animate-[shake_0.4s_ease-in-out] bg-red-900/50 border-red-500' : '';
-
-                    return (
-                        <Fragment key={index}>
-                            {/* Left Column - Spanish */}
-                            <button
-                                key={`left-${lCard.id}`}
-                                disabled={lIsMatched || (!lIsSelected && selectedLeft !== null)}
-                                onClick={() => setSelectedLeft(lCard.id)}
-                                className={`w-full h-14 px-2 text-sm rounded-xl font-medium transition-all duration-300 text-center border overflow-hidden relative flex items-center justify-center
-                                    ${lIsMatched
-                                        ? 'bg-[#4CAF50]/10 border-[#FF6B6B] text-[#FF6B6B]'
-                                        : lIsSelected
-                                            ? 'bg-brand-coral/20 border-brand-coral text-white'
-                                            : 'bg-[#2a2a3e] border-gray-700 text-gray-200 hover:border-gray-500 hover:bg-[#3a3a4e]'}
-                                    ${lErrorClass}
+        <div className="w-full space-y-6">
+            <div className="grid grid-cols-2 gap-4">
+                {/* Left Column - Spanish */}
+                <div className="space-y-3">
+                    <p className="text-xs font-bold text-gray-500 uppercase tracking-widest text-center mb-2">Español</p>
+                    {leftCards.map((card) => {
+                        const isMatched = matchedIds.has(card.id);
+                        const isSelected = selectedLeft === card.id;
+                        
+                        return (
+                            <motion.button
+                                key={`left-${card.id}`}
+                                layout
+                                disabled={isMatched || isError}
+                                onClick={() => setSelectedLeft(card.id)}
+                                whileTap={{ scale: 0.98 }}
+                                className={`w-full p-4 min-h-[4rem] text-sm md:text-base rounded-2xl font-semibold border-2 transition-all duration-200 relative
+                                    ${isMatched 
+                                        ? 'bg-green-500/10 border-green-500/50 text-green-400 cursor-default' 
+                                        : isSelected
+                                            ? 'bg-brand-coral/20 border-brand-coral text-white shadow-[0_0_15px_rgba(230,57,70,0.3)]'
+                                            : 'bg-[#2a2a3e] border-gray-700/50 text-gray-300 hover:border-gray-500 hover:bg-[#34344e]'}
+                                    ${isSelected && isError ? 'border-red-500 bg-red-500/10' : ''}
                                 `}
                             >
-                                {lIsMatched && <CheckCircle className="absolute left-3 w-4 h-4 text-[#FF6B6B]" />}
-                                <span className="line-clamp-2 leading-tight px-6">{lCard.text}</span>
-                            </button>
+                                <AnimatePresence>
+                                    {isMatched && (
+                                        <motion.div 
+                                            initial={{ scale: 0 }}
+                                            animate={{ scale: 1 }}
+                                            className="absolute right-3 top-1/2 -translate-y-1/2"
+                                        >
+                                            <CheckCircle className="w-5 h-5 text-green-500" />
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                                {card.text}
+                            </motion.button>
+                        );
+                    })}
+                </div>
 
-                            {/* Right Column - Dutch */}
-                            <button
-                                key={`right-${rCard.id}`}
-                                disabled={rIsMatched || (!rIsSelected && selectedRight !== null)}
-                                onClick={() => setSelectedRight(rCard.id)}
-                                className={`w-full h-14 px-2 text-sm rounded-xl font-medium transition-all duration-300 text-center border overflow-hidden relative flex items-center justify-center
-                                    ${rIsMatched
-                                        ? 'bg-[#4CAF50]/10 border-[#FF6B6B] text-[#FF6B6B]'
-                                        : rIsSelected
-                                            ? 'bg-brand-coral/20 border-brand-coral text-white'
-                                            : 'bg-[#2a2a3e] border-gray-700 text-gray-200 hover:border-gray-500 hover:bg-[#3a3a4e]'}
-                                    ${rErrorClass}
+                {/* Right Column - Dutch */}
+                <div className="space-y-3">
+                    <p className="text-xs font-bold text-gray-500 uppercase tracking-widest text-center mb-2">Nederlands</p>
+                    {rightCards.map((card) => {
+                        const isMatched = matchedIds.has(card.id);
+                        const isSelected = selectedRight === card.id;
+
+                        return (
+                            <motion.button
+                                key={`right-${card.id}`}
+                                layout
+                                disabled={isMatched || isError}
+                                onClick={() => setSelectedRight(card.id)}
+                                whileTap={{ scale: 0.98 }}
+                                className={`w-full p-4 min-h-[4rem] text-sm md:text-base rounded-2xl font-semibold border-2 transition-all duration-200 relative
+                                    ${isMatched 
+                                        ? 'bg-green-500/10 border-green-500/50 text-green-400 cursor-default' 
+                                        : isSelected
+                                            ? 'bg-brand-coral/20 border-brand-coral text-white shadow-[0_0_15px_rgba(230,57,70,0.3)]'
+                                            : 'bg-[#2a2a3e] border-gray-700/50 text-gray-300 hover:border-gray-500 hover:bg-[#34344e]'}
+                                    ${isSelected && isError ? 'border-red-500 bg-red-500/10' : ''}
                                 `}
                             >
-                                <span className="line-clamp-2 leading-tight px-6">{rCard.text}</span>
-                                {rIsMatched && <CheckCircle className="absolute right-3 w-4 h-4 text-[#FF6B6B]" />}
-                            </button>
-                        </Fragment>
-                    );
-                })}
+                                <AnimatePresence>
+                                    {isMatched && (
+                                        <motion.div 
+                                            initial={{ scale: 0 }}
+                                            animate={{ scale: 1 }}
+                                            className="absolute left-3 top-1/2 -translate-y-1/2"
+                                        >
+                                            <CheckCircle className="w-5 h-5 text-green-500" />
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                                {card.text}
+                            </motion.button>
+                        );
+                    })}
+                </div>
             </div>
 
-            {/* Success Message */}
-            {isComplete && (
-                <div className="mt-8 p-6 bg-brand-charcoal-light border border-[#4CAF50] rounded-xl flex flex-col items-center justify-center animate-in fade-in zoom-in duration-500 shadow-xl">
-                    <Target className="w-12 h-12 text-[#4CAF50] mb-3" />
-                    <h3 className="text-2xl font-bold text-white mb-2">¡Muy bien!</h3>
-                    <p className="text-gray-300 mb-6 font-medium">Alle paren zijn succesvol gevonden.</p>
-                    <button
-                        onClick={onComplete}
-                        className="bg-[#FFB800] hover:bg-[#FFB800]/90 text-brand-charcoal px-6 py-3 rounded-xl font-bold transition-colors flex items-center gap-2"
+            {/* Success Overlay */}
+            <AnimatePresence>
+                {isComplete && (
+                    <motion.div 
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="mt-8 p-8 bg-gradient-to-br from-green-600/20 to-green-900/40 border border-green-500/50 rounded-3xl text-center shadow-2xl backdrop-blur-sm"
                     >
-                        Ga verder naar Explore <ArrowRight className="w-5 h-5" />
-                    </button>
-                </div>
-            )}
+                        <div className="bg-green-500 p-3 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-green-500/20">
+                            <Target className="w-8 h-8 text-white" />
+                        </div>
+                        <h3 className="text-2xl font-black text-white mb-2">¡Excelente!</h3>
+                        <p className="text-green-100/80 mb-6 font-medium">Has emparejado todo correctamente.</p>
+                        <button
+                            onClick={onComplete}
+                            className="bg-white text-green-700 hover:bg-green-50 px-8 py-3 rounded-2xl font-black transition-all flex items-center gap-3 mx-auto shadow-xl hover:scale-105"
+                        >
+                            ¡Vamos al siguiente paso! <ArrowRight className="w-5 h-5" />
+                        </button>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }

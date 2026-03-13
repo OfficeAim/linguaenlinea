@@ -1,13 +1,18 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/utils/supabase/client';
 import { PlayCircle, ArrowLeft, Target, BookOpen, MessageCircle, PenTool, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 import VocabularyMatchingGame from './VocabularyMatchingGame';
 import InteractivePractice from './InteractivePractice';
 import UnitQuiz from './UnitQuiz';
 import AchievementCard from './AchievementCard';
+
+interface GrammarRule {
+    title: string;
+    content: string;
+}
 
 interface VocabularyItem {
     es: string;
@@ -18,6 +23,8 @@ interface VocabularyItem {
 interface DialogueLine {
     speaker: string;
     text: string;
+    blanks?: string[];
+    hints?: string[];
 }
 
 interface LessonContent {
@@ -27,10 +34,18 @@ interface LessonContent {
     vocabulary_theme?: string;
     objectives?: string;
     grammar_focus?: string;
+    vocabulary_theme_nl?: string;
     can_do?: string;
     vocabulary_list?: VocabularyItem[];
     grammar_explanation?: string;
-    dialogue?: DialogueLine[];
+    grammar?: {
+        rules: GrammarRule[];
+    };
+    dialogue?: {
+        title: string;
+        lines: { speaker: string; text: string; blanks?: string[]; hints?: string[] }[];
+    } | DialogueLine[];
+    vocabulary_game?: { spanish: string; dutch: string }[];
     dialogue_audio_url?: string;
     practice?: string | {
         exercises: {
@@ -63,6 +78,8 @@ const getStudentId = () => {
 }
 
 export default function LessonView({ id }: { id: string }) {
+    const supabase = createClient();
+
     const [mounted, setMounted] = useState(false);
     const [studentId, setStudentId] = useState<string | null>(null);
     const [lesson, setLesson] = useState<Lesson | null>(null);
@@ -199,7 +216,7 @@ export default function LessonView({ id }: { id: string }) {
         checkQuizStatus();
     }, [id, isQuizOpen]);
 
-    const interactiveDialogueLines = [
+    const interactiveDialogueLines: DialogueLine[] = [
         { speaker: "Estudiante", text: "¡_____ días!", blanks: ["Buenos"], hints: ["begroeting"] },
         { speaker: "Profesor", text: "¡_____ días!", blanks: ["Buenos"], hints: ["begroeting"] },
         { speaker: "Estudiante", text: "Me _____ Ana Vega, soy una nueva _____.", blanks: ["llamo", "estudiante"], hints: ["naam werkwoord", "rol"] },
@@ -207,7 +224,14 @@ export default function LessonView({ id }: { id: string }) {
         { speaker: "Estudiante", text: "_____, profesor.", blanks: ["Encantada"], hints: ["kennismaking antwoord"] },
     ];
 
-    const flatDialogueAnswers = interactiveDialogueLines.flatMap(l => l.blanks || []);
+    const getDialogueLines = (): DialogueLine[] => {
+        if (!content?.dialogue) return interactiveDialogueLines;
+        if (Array.isArray(content.dialogue)) return content.dialogue;
+        return content.dialogue.lines;
+    };
+
+    const dialogueLines = getDialogueLines();
+    const flatDialogueAnswers = dialogueLines.flatMap((l: DialogueLine) => ('blanks' in l ? l.blanks : []) || []);
 
     if (!mounted || loading) {
         return (
@@ -340,8 +364,8 @@ export default function LessonView({ id }: { id: string }) {
                                 <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
                                     <div className="p-6 rounded-xl border border-gray-800 bg-[#1a1a2e]">
                                         <h4 className="font-bold text-brand-gold mb-6 text-lg">Vocabulary Match</h4>
-                                        {content?.vocabulary_list && content.vocabulary_list.length > 0 ? (
-                                            <VocabularyMatchingGame items={content.vocabulary_list} onComplete={() => setActiveTab('explore')} />
+                                        {content?.vocabulary_game || content?.vocabulary_list ? (
+                                            <VocabularyMatchingGame items={content.vocabulary_game || content.vocabulary_list || []} onComplete={() => setActiveTab('explore')} />
                                         ) : (
                                             <p className="text-gray-500 italic">Vocabulary coming soon...</p>
                                         )}
@@ -350,67 +374,26 @@ export default function LessonView({ id }: { id: string }) {
                                         <h4 className="font-bold text-brand-coral mb-6 text-lg">Grammar Focus</h4>
 
                                         <div className="space-y-6">
-                                            {/* Block 1: Pronouns */}
-                                            <div className="bg-[#2a2a3e] p-4 rounded-lg border border-gray-700">
-                                                <h5 className="font-bold text-white mb-3 text-sm">Persoonlijke voornaamwoorden</h5>
-                                                <div className="flex flex-wrap gap-2">
-                                                    <span className="px-3 py-1 bg-[#1a1a2e] border border-gray-600 rounded-full text-sm text-gray-300">yo (ik)</span>
-                                                    <span className="px-3 py-1 bg-[#1a1a2e] border border-gray-600 rounded-full text-sm text-gray-300">tú (jij)</span>
-                                                    <span className="px-3 py-1 bg-[#1a1a2e] border border-gray-600 rounded-full text-sm text-gray-300">él/ella/usted (hij/zij/u)</span>
-                                                    <span className="px-3 py-1 bg-[#1a1a2e] border border-gray-600 rounded-full text-sm text-gray-300">nosotros/-as (wij)</span>
-                                                    <span className="px-3 py-1 bg-[#1a1a2e] border border-gray-600 rounded-full text-sm text-gray-300">vosotros/-as (jullie)</span>
-                                                    <span className="px-3 py-1 bg-[#1a1a2e] border border-gray-600 rounded-full text-sm text-gray-300">ellos/ellas/ustedes (zij/u mv)</span>
-                                                </div>
-                                            </div>
-
-                                            {/* Block 2: SER */}
-                                            <div className="bg-[#2a2a3e] p-4 rounded-lg border border-gray-700">
-                                                <h5 className="font-bold text-white mb-3 text-sm">SER (zijn)</h5>
-                                                <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm text-gray-300">
-                                                    <div className="flex justify-between border-b border-gray-600/50 pb-1"><span>yo</span> <span className="text-brand-gold font-bold">soy</span></div>
-                                                    <div className="flex justify-between border-b border-gray-600/50 pb-1"><span>nosotros/-as</span> <span className="text-brand-gold font-bold">somos</span></div>
-                                                    <div className="flex justify-between border-b border-gray-600/50 pb-1"><span>tú</span> <span className="text-brand-gold font-bold">eres</span></div>
-                                                    <div className="flex justify-between border-b border-gray-600/50 pb-1"><span>vosotros/-as</span> <span className="text-brand-gold font-bold">sois</span></div>
-                                                    <div className="flex justify-between border-b border-gray-600/50 pb-1"><span>él/ella/usted</span> <span className="text-brand-gold font-bold">es</span></div>
-                                                    <div className="flex justify-between border-b border-gray-600/50 pb-1"><span>ellos/ellas/ustedes</span> <span className="text-brand-gold font-bold">son</span></div>
-                                                </div>
-                                            </div>
-
-                                            {/* Block 3: LLAMARSE */}
-                                            <div className="bg-[#2a2a3e] p-4 rounded-lg border border-gray-700">
-                                                <h5 className="font-bold text-white mb-3 text-sm">LLAMARSE (heten)</h5>
-                                                <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm text-gray-300">
-                                                    <div className="flex justify-between border-b border-gray-600/50 pb-1"><span>yo</span> <span className="text-brand-coral font-bold">me llamo</span></div>
-                                                    <div className="flex justify-between border-b border-gray-600/50 pb-1"><span>nosotros/-as</span> <span className="text-brand-coral font-bold">nos llamamos</span></div>
-                                                    <div className="flex justify-between border-b border-gray-600/50 pb-1"><span>tú</span> <span className="text-brand-coral font-bold">te llamas</span></div>
-                                                    <div className="flex justify-between border-b border-gray-600/50 pb-1"><span>vosotros/-as</span> <span className="text-brand-coral font-bold">os llamáis</span></div>
-                                                    <div className="flex justify-between border-b border-gray-600/50 pb-1"><span>él/ella/usted</span> <span className="text-brand-coral font-bold">se llama</span></div>
-                                                    <div className="flex justify-between border-b border-gray-600/50 pb-1"><span>ellos/ellas/ustedes</span> <span className="text-brand-coral font-bold">se llaman</span></div>
-                                                </div>
-                                            </div>
-
-                                            {/* Block 4: Contrast */}
-                                            <div className="bg-[#2a2a3e] p-4 rounded-lg border border-gray-700">
-                                                <h5 className="font-bold text-white mb-3 text-sm">Contrast Nederlands ↔ Spaans</h5>
-                                                <div className="flex gap-4">
-                                                    <div className="flex-1 bg-[#1a1a2e] p-3 rounded border border-gray-600">
-                                                        <div className="text-xs uppercase text-gray-500 font-bold mb-2">Nederlands</div>
-                                                        <ul className="text-sm text-gray-300 space-y-2">
-                                                            <li>ik heet Jeroen</li>
-                                                            <li>ik ben student</li>
-                                                            <li>ik ben 35 jaar</li>
-                                                        </ul>
+                                            {content?.grammar?.rules ? (
+                                                content.grammar.rules.map((rule, idx) => (
+                                                    <div key={idx} className="bg-[#2a2a3e] p-4 rounded-lg border border-gray-700">
+                                                        <h5 className="font-bold text-white mb-3 text-sm">{rule.title}</h5>
+                                                        <p className="text-sm text-gray-300 whitespace-pre-line leading-relaxed">{rule.content}</p>
                                                     </div>
-                                                    <div className="flex-1 bg-brand-charcoal-light p-3 rounded border border-gray-600 text-[#FFB800]">
-                                                        <div className="text-xs uppercase font-bold mb-2 text-brand-gold">Español</div>
-                                                        <ul className="text-sm space-y-2">
-                                                            <li>me llamo Jeroen</li>
-                                                            <li>soy estudiante</li>
-                                                            <li>tengo 35 años</li>
-                                                        </ul>
+                                                ))
+                                            ) : (
+                                                <div className="space-y-6">
+                                                    {/* Fallback to original Lesson 1.1 hardcoded grammar if no dynamic rule exists */}
+                                                    <div className="bg-[#2a2a3e] p-4 rounded-lg border border-gray-700">
+                                                        <h5 className="font-bold text-white mb-3 text-sm">Persoonlijke voornaamwoorden</h5>
+                                                        <div className="flex flex-wrap gap-2">
+                                                            <span className="px-3 py-1 bg-[#1a1a2e] border border-gray-600 rounded-full text-sm text-gray-300">yo (ik)</span>
+                                                            <span className="px-3 py-1 bg-[#1a1a2e] border border-gray-600 rounded-full text-sm text-gray-300">tú (jij)</span>
+                                                            <span className="px-3 py-1 bg-[#1a1a2e] border border-gray-600 rounded-full text-sm text-gray-300">él/ella/usted (hij/zij/u)</span>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
@@ -445,15 +428,17 @@ export default function LessonView({ id }: { id: string }) {
                                     <div className="space-y-6">
                                         {(() => {
                                             let globalBlankIdx = 0;
-                                            return interactiveDialogueLines.map((line, i) => {
-                                                const parts = line.text.split('_____');
+                                            return dialogueLines.map((line: DialogueLine, i: number) => {
+                                                const hasBlanks = 'blanks' in line && line.blanks && line.blanks.length > 0;
+                                                const parts = hasBlanks ? line.text.split('_____') : [line.text];
 
                                                 return (
                                                     <div key={i} className="flex gap-4 items-start">
-                                                        <span className={`font-bold min-w-[95px] mt-1 ${line.speaker === 'Estudiante' ? 'text-brand-coral' : 'text-[#FFB800]'}`}>{line.speaker}:</span>
+                                                        <span className={`font-bold min-w-[95px] mt-1 ${line.speaker === 'Estudiante' || line.speaker === 'Elena' ? 'text-brand-coral' : 'text-[#FFB800]'}`}>{line.speaker}:</span>
                                                         <div className="text-gray-300 flex-1 leading-loose">
-                                                            {parts.map((part, pIdx) => {
+                                                            {parts.map((part: string, pIdx: number) => {
                                                                 if (pIdx === parts.length - 1) return <span key={pIdx}>{part}</span>;
+                                                                if (!hasBlanks) return <span key={pIdx}>{part}</span>;
 
                                                                 const blankId = globalBlankIdx++;
                                                                 const correctAns = flatDialogueAnswers[blankId];
@@ -485,7 +470,7 @@ export default function LessonView({ id }: { id: string }) {
                                                             })}
 
                                                             {/* Render the hints if they exist for this line */}
-                                                            {line.hints && line.hints.length > 0 && (
+                                                            {'hints' in line && line.hints && line.hints.length > 0 && (
                                                                 <div className="text-gray-400 text-sm mt-1 mb-2 font-mono">
                                                                     💡 Hint: {line.hints.join(' + ')}
                                                                 </div>
@@ -574,7 +559,7 @@ export default function LessonView({ id }: { id: string }) {
                                         studentAvatar={studentAvatar}
                                         score={justPassedScore !== null ? justPassedScore : quizScore}
                                         lessonTitle={lesson?.title || ''}
-                                        lessonNumber="1.1"
+                                        lessonNumber={`${content?.unit || 1}.${content?.lesson_number || 1}`}
                                         achievedDate={achievedDate || (mounted ? new Date().toLocaleDateString('nl-NL') : '')}
                                         facebookShareUrl={`https://www.facebook.com/sharer/sharer.php?u=https://www.linguaenlinea.eu&quote=${encodeURIComponent(`🏆 Ik heb zojuist Les 1.1 behaald op @Linguaenlinea met ${justPassedScore !== null ? justPassedScore : quizScore}%!\n\nMe llamo [naam], soy de Holanda y aprendo español 🇪🇸\n\nLeer ook gratis Spaans 👉\nhttps://linguaenlinea.eu\n\n#linguaenlinea #learnspanish #español #gratis #nederlandsspaans #a1español`)}`}
                                         onShareFacebook={handleShareFacebook}

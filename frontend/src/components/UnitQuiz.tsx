@@ -109,21 +109,55 @@ export default function UnitQuiz({ lessonId, lessonOrder, lessonTitle, studentId
         setScreen('results');
 
         // Save to quiz_results
-        await supabase.from('quiz_results').insert({
+        console.log("Saving quiz result...", {
+            student_id: studentId,
+            quiz_id: quiz.id,
+            score: percentage,
+            passed: hasPassed
+        });
+
+        const { error: insertError } = await supabase.from('quiz_results').insert({
             student_id: studentId,
             quiz_id: quiz.id,
             score: percentage,
             passed: hasPassed,
-            attempts_count: 1 // In a real app, logic would increment this based on existing records
+            attempts_count: 1 
         });
 
-        // Unlock next lesson if passed
+        if (insertError) {
+            console.error("CRITICAL: Error saving quiz results to Supabase:", insertError);
+        } else {
+            console.log("Quiz result saved successfully!");
+            
+            // Also update lesson_progress table if passed
+            if (hasPassed) {
+                console.log("Updating lesson_progress table...");
+                const { error: progressError } = await supabase.from('lesson_progress').upsert({
+                    student_id: studentId,
+                    lesson_id: lessonId,
+                    status: 'completed',
+                    completed_at: new Date().toISOString()
+                }, { onConflict: 'student_id,lesson_id' });
+
+                if (progressError) {
+                    console.error("Error updating lesson_progress:", progressError);
+                } else {
+                    console.log("lesson_progress updated successfully!");
+                }
+            }
+        }
+
+        // Unlock next lesson in the global lessons table if passed (LEGACY/ADMIN logic)
         if (hasPassed) {
-            await supabase
+            const { error: unlockError } = await supabase
                 .from('lessons')
                 .update({ is_locked: false })
                 .eq('track', 'dutch')
                 .eq('order_index', lessonOrder + 1);
+            
+            if (unlockError) {
+                console.error("Error unlocking global lesson:", unlockError);
+            }
         }
     };
 

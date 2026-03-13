@@ -104,12 +104,25 @@ export default function LessonView({ id }: { id: string }) {
         const xp = localStorage.getItem('xp_total');
         if (xp) setXpTotal(parseInt(xp, 10));
 
-        let sId = localStorage.getItem('student_id');
-        if (!sId) {
-            sId = crypto.randomUUID();
-            localStorage.setItem('student_id', sId);
-        }
-        setStudentId(sId);
+        const syncStudentId = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                if (localStorage.getItem('student_id') !== user.id) {
+                    console.log("Syncing student_id in LessonView:", user.id);
+                    localStorage.setItem('student_id', user.id);
+                }
+                setStudentId(user.id);
+            } else {
+                let sId = localStorage.getItem('student_id');
+                if (!sId) {
+                    sId = crypto.randomUUID();
+                    localStorage.setItem('student_id', sId);
+                }
+                setStudentId(sId);
+            }
+        };
+
+        syncStudentId();
     }, []);
 
     const handleShareFacebook = () => {
@@ -219,9 +232,9 @@ export default function LessonView({ id }: { id: string }) {
     const interactiveDialogueLines: DialogueLine[] = [
         { speaker: "Estudiante", text: "¡_____ días!", blanks: ["Buenos"], hints: ["begroeting"] },
         { speaker: "Profesor", text: "¡_____ días!", blanks: ["Buenos"], hints: ["begroeting"] },
-        { speaker: "Estudiante", text: "Me _____ Ana Vega, soy una nueva _____.", blanks: ["llamo", "estudiante"], hints: ["naam werkwoord", "rol"] },
-        { speaker: "Profesor", text: "¡Ah, _____ Ana, mucho _____!", blanks: ["bienvenida", "gusto"], hints: ["verwelkoming", "kennismaking"] },
-        { speaker: "Estudiante", text: "_____, profesor.", blanks: ["Encantada"], hints: ["kennismaking antwoord"] },
+        { speaker: "Estudiante", text: "Me _____ Ana Vega, soy una nueva _____.", blanks: ["llamo", "estudiante"], hints: ["naam werkwoord + rol"] },
+        { speaker: "Profesor", text: "¡Ah, _____ Ana, mucho _____!", blanks: ["bienvenida", "gusto"], hints: ["verwelkoming + kennismaking"] },
+        { speaker: "Estudiante", text: "_____, profesor.", blanks: ["Igualmente"], hints: ["kennismaking antwoord"] },
     ];
 
     const getDialogueLines = (): DialogueLine[] => {
@@ -376,20 +389,69 @@ export default function LessonView({ id }: { id: string }) {
                                         <div className="space-y-6">
                                             {content?.grammar?.rules ? (
                                                 content.grammar.rules.map((rule, idx) => (
-                                                    <div key={idx} className="bg-[#2a2a3e] p-4 rounded-lg border border-gray-700">
-                                                        <h5 className="font-bold text-white mb-3 text-sm">{rule.title}</h5>
-                                                        <p className="text-sm text-gray-300 whitespace-pre-line leading-relaxed">{rule.content}</p>
+                                                    <div key={idx} className="bg-[#1e1e2e] p-6 rounded-xl border border-gray-800 shadow-lg">
+                                                        <h5 className="font-bold text-brand-coral mb-4 text-base flex items-center gap-2">
+                                                            <div className="w-1.5 h-1.5 rounded-full bg-brand-coral"></div>
+                                                            {rule.title}
+                                                        </h5>
+                                                        <div className="text-sm text-gray-300 whitespace-pre-line leading-relaxed">
+                                                            {rule.content.split('|').map((part, i) => (
+                                                                <div key={i} className={part.includes('→') ? 'py-1 border-b border-white/5 last:border-0' : 'mb-2'}>
+                                                                    {part.split(/(\*.*?\*)/g).map((sub, j) => {
+                                                                        if (sub.startsWith('*') && sub.endsWith('*')) {
+                                                                            return <span key={j} className="text-accent-gold font-bold px-1">{sub.slice(1, -1)}</span>;
+                                                                        }
+                                                                        return sub;
+                                                                    })}
+                                                                </div>
+                                                            ))}
+                                                        </div>
                                                     </div>
                                                 ))
                                             ) : (
                                                 <div className="space-y-6">
-                                                    {/* Fallback to original Lesson 1.1 hardcoded grammar if no dynamic rule exists */}
-                                                    <div className="bg-[#2a2a3e] p-4 rounded-lg border border-gray-700">
-                                                        <h5 className="font-bold text-white mb-3 text-sm">Persoonlijke voornaamwoorden</h5>
-                                                        <div className="flex flex-wrap gap-2">
-                                                            <span className="px-3 py-1 bg-[#1a1a2e] border border-gray-600 rounded-full text-sm text-gray-300">yo (ik)</span>
-                                                            <span className="px-3 py-1 bg-[#1a1a2e] border border-gray-600 rounded-full text-sm text-gray-300">tú (jij)</span>
-                                                            <span className="px-3 py-1 bg-[#1a1a2e] border border-gray-600 rounded-full text-sm text-gray-300">él/ella/usted (hij/zij/u)</span>
+                                                    {/* Fallback to original Lesson 1.1 formatted grammar if no dynamic rule exists */}
+                                                    <div className="bg-[#1e1e2e] p-6 rounded-xl border border-gray-800">
+                                                        <h5 className="font-bold text-brand-coral mb-4 text-base">Pronombres personales (Bloque 1)</h5>
+                                                        <div className="flex flex-wrap gap-3">
+                                                            {['yo (ik)', 'tú (jij)', 'él/ella/usted (hij/zij/u)', 'nosotros/-as (wij)', 'vosotros/-as (jullie)', 'ellos/ellas/ustedes (zij/u mv)'].map((p, i) => (
+                                                                <span key={i} className="px-3 py-1.5 bg-brand-charcoal border border-gray-700 rounded-lg text-sm text-brand-gold font-medium">
+                                                                    {p}
+                                                                </span>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="bg-[#1e1e2e] p-6 rounded-xl border border-gray-800">
+                                                        <h5 className="font-bold text-brand-coral mb-4 text-base">Werkwoord SER (Bloque 2)</h5>
+                                                        <div className="grid grid-cols-2 gap-2 text-sm">
+                                                            <div className="p-2 bg-black/20 rounded">yo <span className="text-accent-gold">soy</span></div>
+                                                            <div className="p-2 bg-black/20 rounded">nosotros/-as <span className="text-accent-gold">somos</span></div>
+                                                            <div className="p-2 bg-black/20 rounded">tú <span className="text-accent-gold">eres</span></div>
+                                                            <div className="p-2 bg-black/20 rounded">vosotros/-as <span className="text-accent-gold">sois</span></div>
+                                                            <div className="p-2 bg-black/20 rounded">él/ella/usted <span className="text-accent-gold">es</span></div>
+                                                            <div className="p-2 bg-black/20 rounded">ellos/ellas/ustedes <span className="text-accent-gold">son</span></div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="bg-[#1e1e2e] p-6 rounded-xl border border-gray-800">
+                                                        <h5 className="font-bold text-brand-coral mb-4 text-base">Werkwoord LLAMARSE reflexivo (Bloque 3)</h5>
+                                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+                                                            <div className="p-2 bg-black/20 rounded">yo <span className="text-accent-gold">me llamo</span></div>
+                                                            <div className="p-2 bg-black/20 rounded">nosotros/-as <span className="text-accent-gold">nos llamamos</span></div>
+                                                            <div className="p-2 bg-black/20 rounded">tú <span className="text-accent-gold">te llamas</span></div>
+                                                            <div className="p-2 bg-black/20 rounded">vosotros/-as <span className="text-accent-gold">os llamáis</span></div>
+                                                            <div className="p-2 bg-black/20 rounded">él/ella/usted <span className="text-accent-gold">se llama</span></div>
+                                                            <div className="p-2 bg-black/20 rounded">ellos/ellas/ustedes <span className="text-accent-gold">se llaman</span></div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="bg-[#1e1e2e] p-6 rounded-xl border border-gray-800">
+                                                        <h5 className="font-bold text-brand-coral mb-4 text-base">Contrast Nederlands ↔ Spaans (Bloque 4)</h5>
+                                                        <div className="space-y-2 text-sm">
+                                                            <p>ik heet Jeroen → <span className="text-accent-gold font-bold">me llamo Jeroen</span></p>
+                                                            <p>ik ben student → <span className="text-accent-gold font-bold">soy estudiante</span></p>
+                                                            <p>ik ben 35 jaar → <span className="text-accent-gold font-bold">tengo 35 años</span></p>
                                                         </div>
                                                     </div>
                                                 </div>

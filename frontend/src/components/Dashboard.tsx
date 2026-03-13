@@ -92,10 +92,17 @@ export default function Dashboard() {
         setStudentName(name);
 
         const fetchLessons = async () => {
-            // Priority to student_id from local storage
-            const studentId = localStorage.getItem('student_id') || "11111111-1111-1111-1111-111111111111";
-
             try {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (user) {
+                    if (localStorage.getItem('student_id') !== user.id) {
+                        console.log("Syncing student_id to localStorage:", user.id);
+                        localStorage.setItem('student_id', user.id);
+                    }
+                }
+
+                const studentId = user?.id || localStorage.getItem('student_id') || "11111111-1111-1111-1111-111111111111";
+
                 // Setting current day of week on mount
                 const now = new Date();
                 setCurrentDayOfWeek((now.getDay() + 6) % 7);
@@ -113,24 +120,39 @@ export default function Dashboard() {
                     return;
                 }
 
-                // 2. Fetch Quiz Results
-                const { data: quizData, error: quizError } = await supabase
+                // 2. Fetch Quiz Results and Quizzes to associate with lessons
+                const { data: quizData } = await supabase
                     .from('quiz_results')
+                    .select('*, quizzes(lesson_id)')
+                    .eq('student_id', studentId);
+
+                // Added: Fetch explicit lesson progress
+                const { data: progressData } = await supabase
+                    .from('lesson_progress')
                     .select('*')
                     .eq('student_id', studentId);
 
-                const quizResults = quizData || [];
+                const quizResultsWithLesson = quizData || [];
+                const explicitProgress = progressData || [];
 
                 // 3. Process Progression
                 let isPreviousCompleted = true;
 
                 const enrichedLessons: EnrichedLesson[] = lessonsData.map((lesson: any) => {
-                    const lessonQuizzes = quizResults.filter(q => q.quiz_id === lesson.id);
+                    const lessonQuizzes = quizResultsWithLesson.filter(q => 
+                        (q.quizzes && q.quizzes.lesson_id === lesson.id) || 
+                        q.quiz_id === lesson.id
+                    );
                     const bestScore = lessonQuizzes.length > 0
                         ? Math.max(...lessonQuizzes.map(q => q.score || 0))
                         : 0;
 
-                    const isCompleted = bestScore >= 70;
+                    // A lesson is completed if it has a high score OR the progress table says so
+                    const progressRecord = explicitProgress.find(p => p.lesson_id === lesson.id);
+                    const isCompletedByProgress = progressRecord?.status === 'completed';
+                    const isCompletedByScore = bestScore >= 70;
+                    
+                    const isCompleted = isCompletedByProgress || isCompletedByScore;
                     let status: 'locked' | 'unlocked' | 'completed' = 'locked';
 
                     if (isPreviousCompleted) {

@@ -5,7 +5,16 @@
 > DO NOT read this file to understand project architecture, context, or rules (use `PROJECT_JOURNAL.md` and `SKILLS.md` for that).
 > During the Session Closure Protocol, you MUST append the new session details below this header and recalculate the "Total accumulated time".
 
-**Total accumulated time: 30 h 45 m**
+**Total accumulated time: 32 h 45 m**
+
+## Session: 2026-03-13
+- **Time**: 18:30 - 20:30 (2 h 0 m)
+- **Tasks done**:
+  * fix: Critical bug in Lesson 1 progress saving (Auth UID sync)
+  * fix: Restored Grammar Focus blocks for Lesson 1 (Pronouns, SER, LLAMARSE)
+  * fix: Restored interactive dialogue for Lesson 1 Explore tab
+  * feat: Enhanced Dashboard logic to track explicit lesson_progress status
+  * chore: Reorganized project documentation into .agents/rules/
 
 ## Session: 2026-03-12 (Part 3)
 - **Time**: 08:32 - 10:32 (2 h 0 m)

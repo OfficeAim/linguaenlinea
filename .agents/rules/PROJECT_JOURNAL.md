@@ -179,3 +179,21 @@
 
 - **Log 2026-03-12 (13:25)**: [MICRO] Fixed Next.js hydration mismatch errors across multiple components (\`Dashboard\`, \`LessonView\`, \`Onboarding\`, \`FAQPage\`, \`DotPattern\`). Implemented the "mounted" state pattern to protect window-access, and moved \`new Date()\` logic into \`useEffect\` hooks.
 - **Log 2026-03-12 (13:30)**: [SESSION CLOSE] Auth fixed, icons migrated to Lucide React, and hydration errors resolved. Final production deployment triggered.
+
+### Session: 2026-03-12 (Auth Loop & Supabase SSR Migration)
+- **What:** Auth system overhauled by migrating to `@supabase/ssr`. Fixed infinite redirection loops and CORB blocks in the login/onboarding flow.
+- **Why:** The legacy Supabase client and Next.js `router.push` were failing to propagate session cookies correctly during server-to-client transitions, causing auth gates to loop.
+- **Where:** `login/page.tsx`, `onboarding/page.tsx`, `middleware.ts`.
+- **Learned:** ALWAYS explicitly copy session cookies from the initial response to the redirect response object in Next.js `middleware.ts` when using Supabase. Use `window.location.href` instead of `router.push` for critical auth gates to guarantee full page reloads and state clearance.
+
+### Session: 2026-03-12 (Next.js Hydration Mismatch Fix)
+- **What:** Fixed React hydration mismatch errors across the platform. 
+- **Why:** Next.js Server-Side Rendering (SSR) was generating HTML that didn't match the Client-Side Rendering (due to `window` access and dynamic values like `new Date()`).
+- **Where:** `Dashboard`, `LessonView`, `Onboarding`, `FAQPage`, `DotPattern`.
+- **Learned:** In Next.js App Router, NEVER use dynamic values (`new Date()`) or browser globals (`window`, `localStorage`) directly in the component body. ALWAYS implement a `mounted` boolean state and wrap dynamic logic inside `useEffect` hooks to ensure it only runs on the client.
+
+### Session: 2026-03-12 (UI Polish & Iconography)
+- **What:** Replaced all heavy 3D PNG placeholder icons with `Lucide React` vector icons.
+- **Why:** To optimize performance and establish a cohesive, scalable "Premium Dark Theme" using the brand's red (`#e63946`) and dark backgrounds (`#1a1a2e`).
+- **Where:** Landing page, `Zo ziet een les eruit` section, FAQ, Over Ons.
+- **Learned:** Lucide React is the official iconography library for this project. Always use it instead of static image assets for UI icons to maintain the design system.

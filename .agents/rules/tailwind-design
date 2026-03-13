@@ -1,0 +1,22 @@
+# SKILL: TAILWIND CSS & PREMIUM DARK MODE DESIGN SYSTEM
+> **[SYSTEM DIRECTIVE]** 
+> Apply these rules strictly whenever creating or modifying UI components, layouts, or styles for Linguaenlinea.
+
+## 1. BRAND IDENTITY & COLOR TOKENS
+- **Premium Dark Mode:** The platform is exclusively dark mode. The default background is `bg-[#1a1a2e]` or a deep dark `bg-[#0D0D0D]`. Use `bg-white/5` and `border-white/10` for cards/panels to create subtle glassmorphism effects.
+- **Brand Accents:** Use the official brand Red/Coral (`#e63946`) and Gold (`#D4AF37`) for highlights, buttons, and active states.
+- **Text:** Ensure high contrast using standard Tailwind `text-white` for primary text and `text-gray-300` or `text-gray-400` for secondary text.
+
+## 2. LAYOUT & RESPONSIVE DESIGN (LEARNED FROM ENGRAM)
+- **Universal Padding:** ALWAYS apply the standardized platform padding strategy to page containers: `px-4` for mobile, `px-8` for md (tablet), and `px-16` for lg (desktop).
+- **Mobile-First Navigation:** Use sticky mobile headers with a hamburger menu (drawer) and a fixed bottom navigation bar for the Dashboard on mobile viewports.
+- **Grid to Stack:** Ensure grid layouts automatically stack vertically on mobile screens using Tailwind responsive prefixes (e.g., `grid-cols-1 md:grid-cols-2`).
+- **Standard Scaling:** Use the unified scaling metrics: Header (`h-24`), Footer (`h-20`), Sidebar (`h-16`), and Achievement Cards (`h-8`).
+
+## 3. TYPOGRAPHY & ICONOGRAPHY (LEARNED FROM ENGRAM)
+- **Icons:** EXCLUSIVELY use `Lucide React` for UI icons. NEVER use static PNGs, 3D images, or emojis for standard UI actions. Apply brand colors to icons (e.g., `color="#e63946"`).
+- **Scaling:** Hero text must scale appropriately across breakpoints (e.g., `text-3xl` on mobile, `text-6xl` on desktop).
+
+## 4. ADVANCED UI COMPONENTS
+- **Animations:** For landing pages and marketing sections, utilize advanced components like animated shaders (Three.js WebGL), Particle Text, or Framer Motion as outlined in the `MASTER_PLAYBOOK.md`. 
+- **Component Isolation:** ALWAYS isolate WebGL, Spline 3D models, or heavy Particle Engines in their own wrapper components using dynamic imports with `ssr: false` to prevent layout shifts and server-side errors.

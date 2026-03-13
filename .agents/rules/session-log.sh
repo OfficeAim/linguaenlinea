@@ -5,6 +5,8 @@ OUTPUT_FILE="../.agents/SESSION_HISTORY.md"
 mkdir -p ../.agents
 
 # Go to the git root
+# NOTA: Si ya moviste tu carpeta .git a la raíz del proyecto (como dice tu Journal), 
+# deberás quitar esta línea de "cd frontend". Si aún está dentro, déjala así.
 cd frontend || { echo "❌ Error: frontend directory not found"; exit 1; }
 
 # Temporary file for building the history
@@ -46,8 +48,17 @@ done
 TOTAL_HRS=$((TOTAL_SECONDS / 3600))
 TOTAL_MIN=$(((TOTAL_SECONDS % 3600) / 60))
 
-# Create the final file with header
-echo "# Project Session History" > "$OUTPUT_FILE"
+# Create the final file with the strict AI SYSTEM RULE header
+cat << 'EOF' > "$OUTPUT_FILE"
+# PROJECT SESSION HISTORY & METRICS
+
+> **[SYSTEM RULE FOR ANTIGRAVITY]**
+> This file is STRICTLY an append-only audit log for tracking developer velocity, time spent, and high-level task summaries.
+> DO NOT read this file to understand project architecture, context, or rules (use `PROJECT_JOURNAL.md` and `SKILLS.md` for that).
+> During the Session Closure Protocol, you MUST append the new session details below this header and recalculate the "Total accumulated time".
+
+EOF
+
 echo "**Total accumulated time: $TOTAL_HRS h $TOTAL_MIN m**" >> "$OUTPUT_FILE"
 echo "" >> "$OUTPUT_FILE"
 cat "$TMP_BODY" >> "$OUTPUT_FILE"

@@ -1,4 +1,10 @@
-# Project Session History
+# PROJECT SESSION HISTORY & METRICS
+
+> **[SYSTEM RULE FOR ANTIGRAVITY]**
+> This file is STRICTLY an append-only audit log for tracking developer velocity, time spent, and high-level task summaries.
+> DO NOT read this file to understand project architecture, context, or rules (use `PROJECT_JOURNAL.md` and `SKILLS.md` for that).
+> During the Session Closure Protocol, you MUST append the new session details below this header and recalculate the "Total accumulated time".
+
 **Total accumulated time: 30 h 45 m**
 
 ## Session: 2026-03-12 (Part 3)
@@ -17,7 +23,7 @@
   * feat: Migrated to @supabase/ssr for robust cookie-based authentication
   * deploy: Final production deployment with fixed auth architecture
   * fix: Refined landing page icon backgrounds for better integration
-  * fix: Resolved Next.js hydration mismatch errors (\`window\`, \`Date\`, \`Math\`)
+  * fix: Resolved Next.js hydration mismatch errors (`window`, `Date`, `Math`)
   * style: Replaced all PNG icons across the site with Lucide React icons
   * deploy: Final production deployment after auth and hydration fixes
 
@@ -64,4 +70,3 @@
   * feat: Implement initial onboarding and dashboard views with Supabase integration and custom Tailwind CSS.
   * feat: Implement initial user onboarding, dashboard, and lesson views with Supabase integration.
   * feat: Integrate structured lesson content and video playback into the LessonView component.
-
